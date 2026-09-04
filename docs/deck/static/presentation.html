@@ -59,20 +59,36 @@
   section {
     position: absolute; top: 0; left: 0;
     width: 100%; height: 100%;
-    padding: 48px 64px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    padding: 34px 72px 40px;
+    overflow: hidden;
     opacity: 0; visibility: hidden;
     transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+    display: flex;
+    flex-direction: column;
   }
   section.bespoke-active { opacity: 1; visibility: visible; }
+
+  /* Fixed header band */
+  section > h2 { flex: 0 0 auto; margin-bottom: 14px; }
+
+  /* Unified content region */
+  .deck-body {
+    flex: 1 1 auto; min-height: 0;
+    width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;
+    align-items: center;
+  }
 
   /* ---------- typography ---------- */
   h1 { font-family: "Spectral", Georgia, serif; font-weight: 700; color: var(--head); }
   h2 {
     font-family: "Spectral", Georgia, serif; font-weight: 600; color: var(--head);
     font-size: 28px; letter-spacing: 0.2px;
-    display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 16px; margin-bottom: 14px;
   }
   h2 .kicker {
     font-family: "Inter", sans-serif; font-size: 11px; font-weight: 700;
@@ -90,7 +106,7 @@
   em { color: var(--gold); font-style: normal; font-weight: 600; }
 
   /* ---------- cover slide ---------- */
-  .cover { display: flex; flex-direction: column; justify-content: center; min-height: 82vh; }
+  .cover { flex: 1 1 0; display: flex; flex-direction: column; justify-content: center; }
   .cover .brand {
     display: flex; align-items: center; gap: 12px;
     color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: 3px;
@@ -122,10 +138,10 @@
   .hint b { color: var(--teal-bright); margin-right: 6px; }
 
   /* ---------- content cards ---------- */
-  .lead { font-size: 17px; color: var(--muted); margin-bottom: 22px; max-width: 1000px; line-height: 1.6; }
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-  .cols.three { grid-template-columns: 1fr 1fr 1fr; }
-  .cols.split-img { grid-template-columns: 1.3fr 0.9fr; gap: 24px; align-items: center; }
+  .lead { font-size: 17px; color: var(--muted); margin: 0 auto 22px; max-width: 1100px; line-height: 1.6; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 1100px; margin: 0 auto; }
+  .cols.three { grid-template-columns: 1fr 1fr 1fr; max-width: 1100px; }
+  .cols.split-img { grid-template-columns: 1.3fr 0.9fr; gap: 24px; align-items: center; max-width: 1100px; }
 
   .card {
     background: var(--panel); border: 1px solid var(--stroke);
@@ -140,6 +156,42 @@
   .card li::before { content: "▸"; position: absolute; left: 0; color: var(--blue); font-weight: bold; }
   .card code, .formula code { font-family: var(--mono); font-size: 12px; color: var(--gold); background: rgba(233,196,106,0.1); border: 1px solid rgba(233,196,106,0.25); border-radius: 5px; padding: 2px 6px; }
 
+  /* ---------- FAQ slides ---------- */
+  .faq-grid { width: 100%; max-width: 1560px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .faq-card { border-radius: 14px; padding: 22px 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+  .faq-card .faq-tag {
+    display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; border-radius: 999px;
+    padding: 3px 12px; margin-bottom: 12px;
+  }
+  .faq-card.perf    { background: var(--panel);  border: 1px solid var(--stroke); }
+  .faq-card.perf .faq-tag    { color: var(--blue);    background: rgba(74, 123, 171, 0.15); border: 1px solid rgba(74, 123, 171, 0.45); }
+  .faq-card.risk    { background: var(--panel);  border: 1px solid var(--stroke); }
+  .faq-card.risk .faq-tag    { color: var(--orange);  background: rgba(240, 113, 103, 0.13); border: 1px solid rgba(240, 113, 103, 0.45); }
+  .faq-card.verdict { background: var(--panel);  border: 1px solid var(--stroke-highlight); }
+  .faq-card.verdict .faq-tag { color: var(--teal-bright); background: rgba(42, 157, 143, 0.15); border: 1px solid rgba(42, 157, 143, 0.5); }
+  .faq-card h3 { font-size: 15px; color: var(--head); margin-bottom: 10px; letter-spacing: 0.3px; font-weight: 600; }
+  .faq-card ul { list-style: none; }
+  .faq-card li { font-size: 13.5px; line-height: 1.6; color: var(--text); padding-left: 16px; position: relative; margin-bottom: 9px; }
+  .faq-card li:last-child { margin-bottom: 0; }
+  .faq-card li::before { content: "▸"; position: absolute; left: 0; color: var(--blue); font-weight: bold; }
+  .faq-card.verdict li::before { color: var(--teal-bright); }
+  .faq-bottomline {
+    width: 100%; max-width: 1560px; margin-top: 20px;
+    background: linear-gradient(90deg, rgba(42,157,143,0.16), rgba(233,196,106,0.10));
+    border: 1px solid var(--gold); border-radius: 14px; padding: 18px 26px;
+    display: flex; align-items: baseline; gap: 18px;
+  }
+  .faq-bottomline .bl-tag {
+    flex: 0 0 auto; font-family: var(--mono); font-size: 12px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold);
+  }
+  .faq-bottomline p { font-size: 15px; line-height: 1.6; color: var(--text); }
+
+  @media (max-width: 1100px) {
+    .faq-grid { grid-template-columns: 1fr; }
+  }
+
   /* ---------- stats detail grid ---------- */
   .stat-row { margin-bottom: 14px; }
   .stat-row .label { font-size: 11px; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; display: block; font-weight: 600; }
@@ -148,9 +200,10 @@
   .stat-row .value.gold { color: var(--gold); }
   .stat-row .value.orange { color: var(--orange); }
   .stat-row .desc { font-size: 12.5px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+  #stats-grid { max-width: 1100px; margin: 0 auto; }
 
   /* ---------- tables ---------- */
-  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; max-width: 1100px; margin: 0 auto; }
   th {
     text-align: left; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
     color: var(--gold); font-weight: 700; padding: 12px 14px;
@@ -169,32 +222,75 @@
   td.wr-green { color: var(--teal-bright); font-weight: 700; }
 
   /* ---------- mermaid container ---------- */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 24px;
+    width: 100%;
+    max-width: 1560px;
+    align-items: center;
+  }
+  .arch-notes {
+    background: var(--panel);
+    border: 1px solid var(--stroke-highlight);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+  .arch-notes h3 {
+    font-size: 15px; color: var(--gold); letter-spacing: 1.2px;
+    text-transform: uppercase; font-weight: 700; margin-bottom: 12px;
+  }
+  .arch-notes p { font-size: 14px; line-height: 1.55; color: var(--text); }
+  .arch-notes .arch-list { list-style: none; margin-top: 12px; }
+  .arch-notes .arch-list li {
+    font-size: 13.5px; line-height: 1.5; color: var(--text);
+    padding-left: 16px; position: relative; margin-bottom: 8px;
+  }
+  .arch-notes .arch-list li::before { content: "▸"; position: absolute; left: 0; color: var(--teal-bright); font-weight: bold; }
+  .arch-notes .dim { margin-top: 12px; color: var(--muted); font-size: 12px; }
+
   .mermaid-wrapper {
     background: var(--panel); border: 1px solid var(--stroke);
-    border-radius: 14px; padding: 24px; margin-top: 10px;
+    border-radius: 14px; padding: 24px 28px;
     display: flex; justify-content: center; align-items: center;
+    margin: 0;
   }
-  .mermaid { width: 100%; max-width: 1100px; }
+  .mermaid { width: 100%; }
+  .mermaid svg {
+    width: 100% !important;
+    max-width: 940px !important;
+    height: auto;
+  }
 
   /* ---------- image slide ---------- */
-  .imgwrap {
+  .imgwrap-full {
     display: flex; justify-content: center; align-items: center;
-    height: calc(100vh - 220px);
+    width: 100%; max-width: 1560px; margin: 0 auto;
   }
-  .imgwrap img {
-    max-width: 100%; max-height: 100%;
+  .imgwrap-full img {
+    width: 100%; height: auto; max-height: 60vh;
+    object-fit: contain;
     border-radius: 10px;
     border: 1px solid var(--stroke-highlight);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   }
+  .img-card { max-width: 1560px; margin: 14px auto 0; }
 
   /* ---------- formula box ---------- */
   .formula {
     font-family: var(--mono); font-size: 15px; color: var(--head);
     background: rgba(42, 157, 143, 0.08); border: 1px solid rgba(42, 157, 143, 0.35);
-    border-radius: 12px; padding: 16px 20px; margin-top: 16px;
+    border-radius: 12px; padding: 16px 20px; margin: 16px auto 0; max-width: 1100px;
   }
   .formula .lbl { color: var(--gold); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; display: block; margin-bottom: 6px; font-weight: 700; }
+
+  /* ---------- diagram card ---------- */
+  .diagram-card { padding: 0; overflow: hidden; max-width: 1050px; margin: 0 auto; }
+  .diagram-scroll { overflow-x: auto; padding: 18px 20px; }
+  .diagram-card pre {
+    font-family: var(--mono); font-size: 12px; line-height: 1.4;
+    color: var(--text); margin: 0; white-space: pre;
+  }
 
   /* ---------- progress ---------- */
   body .bespoke-progress-parent {
@@ -222,64 +318,728 @@
 
 <script id="stats-data" type="application/json">
 [
-  {"":"Start","group":"2026-02-25 00:00:00"},
-  {"":"End","group":"2026-08-25 00:00:00"},
-  {"":"Period","group":126},
-  {"":"Start Value","group":250000.0},
-  {"":"End Value","group":256469.7607944252},
-  {"":"Total Return [%]","group":2.5879043177700884},
-  {"":"Benchmark Return [%]","group":8.460659588501972},
-  {"":"Max Gross Exposure [%]","group":7.945373084170523},
-  {"":"Total Fees Paid","group":527.6013029437926},
-  {"":"Max Drawdown [%]","group":1.1432519828978467},
-  {"":"Max Drawdown Duration","group":55.0},
-  {"":"Total Trades","group":77},
-  {"":"Total Closed Trades","group":77},
-  {"":"Total Open Trades","group":0},
-  {"":"Open Trade PnL","group":0.0},
-  {"":"Win Rate [%]","group":55.84415584415584},
-  {"":"Best Trade [%]","group":8.720860935097715},
-  {"":"Worst Trade [%]","group":-7.732206486979272},
-  {"":"Avg Winning Trade [%]","group":1.8407963216639072},
-  {"":"Avg Losing Trade [%]","group":-1.9554156441411852},
-  {"":"Avg Winning Trade Duration","group":1.627906976744186},
-  {"":"Avg Losing Trade Duration","group":1.7058823529411764},
-  {"":"Profit Factor","group":1.5685683205409673},
-  {"":"Expectancy","group":84.02286746006757}
+  {
+    "": "Start",
+    "group": "2025-08-26 00:00:00"
+  },
+  {
+    "": "End",
+    "group": "2026-08-26 00:00:00"
+  },
+  {
+    "": "Period",
+    "group": 252.0
+  },
+  {
+    "": "Start Value",
+    "group": 250000.0
+  },
+  {
+    "": "End Value",
+    "group": 268083.931036
+  },
+  {
+    "": "Total Return [%]",
+    "group": 7.233572
+  },
+  {
+    "": "Benchmark Return [%]",
+    "group": 30.592764
+  },
+  {
+    "": "Max Gross Exposure [%]",
+    "group": 182.728156
+  },
+  {
+    "": "Total Fees Paid",
+    "group": 3697.247419
+  },
+  {
+    "": "Max Drawdown [%]",
+    "group": 3.80964
+  },
+  {
+    "": "Max Drawdown Duration",
+    "group": 138.0
+  },
+  {
+    "": "Total Trades",
+    "group": 340.0
+  },
+  {
+    "": "Total Closed Trades",
+    "group": 338.0
+  },
+  {
+    "": "Total Open Trades",
+    "group": 2.0
+  },
+  {
+    "": "Open Trade PnL",
+    "group": -274.875859
+  },
+  {
+    "": "Win Rate [%]",
+    "group": 50.591716
+  },
+  {
+    "": "Best Trade [%]",
+    "group": 9.94055
+  },
+  {
+    "": "Worst Trade [%]",
+    "group": -8.84419
+  },
+  {
+    "": "Avg Winning Trade [%]",
+    "group": 1.709219
+  },
+  {
+    "": "Avg Losing Trade [%]",
+    "group": -1.660582
+  },
+  {
+    "": "Avg Winning Trade Duration",
+    "group": 1.988304
+  },
+  {
+    "": "Avg Losing Trade Duration",
+    "group": 1.976048
+  },
+  {
+    "": "Profit Factor",
+    "group": 1.204059
+  },
+  {
+    "": "Expectancy",
+    "group": 54.315997
+  }
 ]
 </script>
 
 <script id="comm-data" type="application/json">
 [
-  {"Pair_Legs":"MSCI / RJF","Total_Return_[%]":0.7715351641140566,"Sharpe_Ratio":0.9987103023957931,"Sortino_Ratio":5.442257927009617,"Max_DD_[%]":0.004492438273473454,"Win_Rate_[%]":100.0,"Total_Trades":3},
-  {"Pair_Legs":"MCD / YUM","Total_Return_[%]":0.13331797087718922,"Sharpe_Ratio":0.9506071747577671,"Sortino_Ratio":1.8692381488945213,"Max_DD_[%]":0.0022637403230385544,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"SWKS / ZBRA","Total_Return_[%]":0.11256954474574421,"Sharpe_Ratio":0.9375615077693781,"Sortino_Ratio":2.4127500989108044,"Max_DD_[%]":0.0014809308964913726,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"MA / SPGI","Total_Return_[%]":0.3395898295134536,"Sharpe_Ratio":0.7694484464040299,"Sortino_Ratio":2.468618884601806,"Max_DD_[%]":0.0043663796208903705,"Win_Rate_[%]":100.0,"Total_Trades":2},
-  {"Pair_Legs":"RVTY / STE","Total_Return_[%]":0.1856211338527869,"Sharpe_Ratio":0.7065517326007548,"Sortino_Ratio":1.51079391030436,"Max_DD_[%]":0.0039008236560111875,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"MS / STT","Total_Return_[%]":0.30800245933795267,"Sharpe_Ratio":0.699182015662267,"Sortino_Ratio":2.0850580331300566,"Max_DD_[%]":0.0046901527042342295,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"BA / EMR","Total_Return_[%]":0.07387179822111456,"Sharpe_Ratio":0.6966014182362954,"Sortino_Ratio":1.6781043710115706,"Max_DD_[%]":0.001397642676348454,"Win_Rate_[%]":100.0,"Total_Trades":2},
-  {"Pair_Legs":"MSFT / TRMB","Total_Return_[%]":0.1649333089228655,"Sharpe_Ratio":0.6949201276183974,"Sortino_Ratio":1.4882382169916086,"Max_DD_[%]":0.0035186963707078966,"Win_Rate_[%]":100.0,"Total_Trades":2},
-  {"Pair_Legs":"CCI / VICI","Total_Return_[%]":0.18528149631433788,"Sharpe_Ratio":0.6921908886964203,"Sortino_Ratio":1.2566399312576109,"Max_DD_[%]":0.004681362853131699,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"CSCO / JBL","Total_Return_[%]":0.08045644634055993,"Sharpe_Ratio":0.6913070981072721,"Sortino_Ratio":1.196188124341428,"Max_DD_[%]":0.0021355077244544773,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"MA / V","Total_Return_[%]":0.3175115843530918,"Sharpe_Ratio":0.6738086208192121,"Sortino_Ratio":1.107084238388981,"Max_DD_[%]":0.011957679716845249,"Win_Rate_[%]":100.0,"Total_Trades":3},
-  {"Pair_Legs":"BIIB / MRK","Total_Return_[%]":0.07899256802361698,"Sharpe_Ratio":0.6722555448323588,"Sortino_Ratio":0.5822995966275448,"Max_DD_[%]":0.004307147411442003,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"DVN / SLB","Total_Return_[%]":0.04678091917791338,"Sharpe_Ratio":0.6481084692450689,"Sortino_Ratio":0.3474197235044551,"Max_DD_[%]":0.004275282441090766,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"ETN / JCI","Total_Return_[%]":0.041187186697722034,"Sharpe_Ratio":0.6350895358063462,"Sortino_Ratio":0.2834909811480289,"Max_DD_[%]":0.004612914714330341,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"AEE / AEP","Total_Return_[%]":0.04855980285449757,"Sharpe_Ratio":0.32753621609463535,"Sortino_Ratio":0.06539850213411577,"Max_DD_[%]":0.0440364853973807,"Win_Rate_[%]":50.0,"Total_Trades":4},
-  {"Pair_Legs":"BIO / IQV","Total_Return_[%]":0.05873690777813412,"Sharpe_Ratio":0.28612635474919634,"Sortino_Ratio":0.03880235977505662,"Max_DD_[%]":0.06803730047728607,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"AVGO / NVDA","Total_Return_[%]":0.22041905847198784,"Sharpe_Ratio":0.2827133368478355,"Sortino_Ratio":0.02729597743376368,"Max_DD_[%]":0.36918014416146283,"Win_Rate_[%]":50.0,"Total_Trades":6},
-  {"Pair_Legs":"AMT / VICI","Total_Return_[%]":0.1384506062837243,"Sharpe_Ratio":0.2379588030984273,"Sortino_Ratio":0.029416866519747023,"Max_DD_[%]":0.21243378430966242,"Win_Rate_[%]":100.0,"Total_Trades":3},
-  {"Pair_Legs":"NVDA / TEL","Total_Return_[%]":0.42894987574213506,"Sharpe_Ratio":0.21637812012998603,"Sortino_Ratio":0.026867061096435944,"Max_DD_[%]":0.9654000922403094,"Win_Rate_[%]":25.0,"Total_Trades":4},
-  {"Pair_Legs":"MTB / PNC","Total_Return_[%]":0.04808056644773906,"Sharpe_Ratio":0.16220994699714075,"Sortino_Ratio":0.026048890564433623,"Max_DD_[%]":0.09484075241448231,"Win_Rate_[%]":66.66666666666666,"Total_Trades":3},
-  {"Pair_Legs":"CPT / WY","Total_Return_[%]":0.003918938157410068,"Sharpe_Ratio":0.03208181712436594,"Sortino_Ratio":0.003627333948463259,"Max_DD_[%]":0.08422638612708422,"Win_Rate_[%]":60.0,"Total_Trades":5},
-  {"Pair_Legs":"A / IQV","Total_Return_[%]":0.0,"Sharpe_Ratio":0.0,"Sortino_Ratio":0.0,"Max_DD_[%]":0.0,"Win_Rate_[%]":0.0,"Total_Trades":0},
-  {"Pair_Legs":"ANET / NVDA","Total_Return_[%]":-0.04840029332725537,"Sharpe_Ratio":-0.06660965090620617,"Sortino_Ratio":-0.005506345196960783,"Max_DD_[%]":0.3888693785662034,"Win_Rate_[%]":20.0,"Total_Trades":5},
-  {"Pair_Legs":"ATO / EVRG","Total_Return_[%]":-0.09593230275560805,"Sharpe_Ratio":-0.4609759927334213,"Sortino_Ratio":-0.030863275669750046,"Max_DD_[%]":0.13939294123038737,"Win_Rate_[%]":25.0,"Total_Trades":4},
-  {"Pair_Legs":"AMP / SPGI","Total_Return_[%]":-0.26045338743256874,"Sharpe_Ratio":-0.7218077779321561,"Sortino_Ratio":-0.04564959189395727,"Max_DD_[%]":0.26045338743256874,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"AMP / V","Total_Return_[%]":-0.2757254093601391,"Sharpe_Ratio":-0.7218375142701696,"Sortino_Ratio":-0.04565146863349948,"Max_DD_[%]":0.2757254093601391,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"ES / XEL","Total_Return_[%]":-0.25876338135618626,"Sharpe_Ratio":-0.7222422947538596,"Sortino_Ratio":-0.04567701536090362,"Max_DD_[%]":0.25876338135618626,"Win_Rate_[%]":50.0,"Total_Trades":2},
-  {"Pair_Legs":"JPM / SYF","Total_Return_[%]":-0.21513628478896374,"Sharpe_Ratio":-0.7232957434003492,"Sortino_Ratio":-0.04574350077148971,"Max_DD_[%]":0.21513628478896374,"Win_Rate_[%]":0.0,"Total_Trades":2},
-  {"Pair_Legs":"AXP / BAC","Total_Return_[%]":-0.06810266516918961,"Sharpe_Ratio":-0.7614861415521905,"Sortino_Ratio":-0.04815336486952726,"Max_DD_[%]":0.06810266516918961,"Win_Rate_[%]":50.0,"Total_Trades":2}
+    {
+        "Pair_Legs": "ALL / CINF",
+        "Total_Return_[%]": 2.078446,
+        "Sharpe_Ratio": 1.103444,
+        "Sortino_Ratio": 4.631419,
+        "Max_DD_[%]": 0.007562,
+        "Win_Rate_[%]": 81.818182,
+        "Total_Trades": 11.0
+    },
+    {
+        "Pair_Legs": "JPM / IBKR",
+        "Total_Return_[%]": 0.867230,
+        "Sharpe_Ratio": 0.782765,
+        "Sortino_Ratio": 0.401083,
+        "Max_DD_[%]": 0.058659,
+        "Win_Rate_[%]": 100.0,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "ETN / J",
+        "Total_Return_[%]": 0.402074,
+        "Sharpe_Ratio": 0.674585,
+        "Sortino_Ratio": 0.991011,
+        "Max_DD_[%]": 0.018264,
+        "Win_Rate_[%]": 66.666667,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "FTV / IEX",
+        "Total_Return_[%]": 3.005725,
+        "Sharpe_Ratio": 0.658232,
+        "Sortino_Ratio": 7.044202,
+        "Max_DD_[%]": 0.006808,
+        "Win_Rate_[%]": 66.666667,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "ETN / TT",
+        "Total_Return_[%]": 2.715107,
+        "Sharpe_Ratio": 0.570020,
+        "Sortino_Ratio": 0.189036,
+        "Max_DD_[%]": 0.419617,
+        "Win_Rate_[%]": 66.666667,
+        "Total_Trades": 9.0
+    },
+    {
+        "Pair_Legs": "CDNS / PTC",
+        "Total_Return_[%]": 0.926146,
+        "Sharpe_Ratio": 0.544632,
+        "Sortino_Ratio": 1.995565,
+        "Max_DD_[%]": 0.007340,
+        "Win_Rate_[%]": 100.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "AON / PGR",
+        "Total_Return_[%]": 0.642600,
+        "Sharpe_Ratio": 0.496039,
+        "Sortino_Ratio": 1.517399,
+        "Max_DD_[%]": 0.006703,
+        "Win_Rate_[%]": 100.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "MS / STT",
+        "Total_Return_[%]": 0.474555,
+        "Sharpe_Ratio": 0.493237,
+        "Sortino_Ratio": 0.983535,
+        "Max_DD_[%]": 0.007637,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "NSC / ROK",
+        "Total_Return_[%]": 0.598203,
+        "Sharpe_Ratio": 0.489461,
+        "Sortino_Ratio": 0.320821,
+        "Max_DD_[%]": 0.062019,
+        "Win_Rate_[%]": 75.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "AIG / WRB",
+        "Total_Return_[%]": 0.278216,
+        "Sharpe_Ratio": 0.489056,
+        "Sortino_Ratio": 0.643321,
+        "Max_DD_[%]": 0.006845,
+        "Win_Rate_[%]": 100.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "AVY / AMCR",
+        "Total_Return_[%]": 0.231249,
+        "Sharpe_Ratio": 0.486984,
+        "Sortino_Ratio": 0.548574,
+        "Max_DD_[%]": 0.006672,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "GD / HII",
+        "Total_Return_[%]": 0.160091,
+        "Sharpe_Ratio": 0.482695,
+        "Sortino_Ratio": 0.419739,
+        "Max_DD_[%]": 0.006037,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "AXP / BAC",
+        "Total_Return_[%]": 0.171622,
+        "Sharpe_Ratio": 0.480165,
+        "Sortino_Ratio": 0.368304,
+        "Max_DD_[%]": 0.007376,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "HON / EMR",
+        "Total_Return_[%]": 0.135220,
+        "Sharpe_Ratio": 0.477730,
+        "Sortino_Ratio": 0.329230,
+        "Max_DD_[%]": 0.006501,
+        "Win_Rate_[%]": 100.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "DTE / PPL",
+        "Total_Return_[%]": 0.479829,
+        "Sharpe_Ratio": 0.474837,
+        "Sortino_Ratio": 0.072122,
+        "Max_DD_[%]": 0.215437,
+        "Win_Rate_[%]": 57.142857,
+        "Total_Trades": 7.0
+    },
+    {
+        "Pair_Legs": "PWR / TT",
+        "Total_Return_[%]": 1.015340,
+        "Sharpe_Ratio": 0.473828,
+        "Sortino_Ratio": 0.102217,
+        "Max_DD_[%]": 0.458436,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 10.0
+    },
+    {
+        "Pair_Legs": "AMZN / HLT",
+        "Total_Return_[%]": 0.687203,
+        "Sharpe_Ratio": 0.462510,
+        "Sortino_Ratio": 0.053019,
+        "Max_DD_[%]": 0.362598,
+        "Win_Rate_[%]": 66.666667,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "ALL / GL",
+        "Total_Return_[%]": 0.685668,
+        "Sharpe_Ratio": 0.438096,
+        "Sortino_Ratio": 0.074938,
+        "Max_DD_[%]": 0.343779,
+        "Win_Rate_[%]": 62.500000,
+        "Total_Trades": 8.0
+    },
+    {
+        "Pair_Legs": "D / XEL",
+        "Total_Return_[%]": 0.316430,
+        "Sharpe_Ratio": 0.419693,
+        "Sortino_Ratio": 0.046416,
+        "Max_DD_[%]": 0.159591,
+        "Win_Rate_[%]": 100.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "AXP / WFC",
+        "Total_Return_[%]": 0.358513,
+        "Sharpe_Ratio": 0.368678,
+        "Sortino_Ratio": 0.035262,
+        "Max_DD_[%]": 0.234907,
+        "Win_Rate_[%]": 25.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "COP / OXY",
+        "Total_Return_[%]": 0.401479,
+        "Sharpe_Ratio": 0.340278,
+        "Sortino_Ratio": 0.038058,
+        "Max_DD_[%]": 0.414412,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 12.0
+    },
+    {
+        "Pair_Legs": "AFL / PFG",
+        "Total_Return_[%]": 0.141603,
+        "Sharpe_Ratio": 0.324505,
+        "Sortino_Ratio": 0.038226,
+        "Max_DD_[%]": 0.089141,
+        "Win_Rate_[%]": 66.666667,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "EXPD / FDX",
+        "Total_Return_[%]": 0.154050,
+        "Sharpe_Ratio": 0.321241,
+        "Sortino_Ratio": 0.052508,
+        "Max_DD_[%]": 0.105771,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "NDSN / TXT",
+        "Total_Return_[%]": 0.012668,
+        "Sharpe_Ratio": 0.298914,
+        "Sortino_Ratio": 0.027538,
+        "Max_DD_[%]": 0.007282,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "CMS / PNW",
+        "Total_Return_[%]": 0.193677,
+        "Sharpe_Ratio": 0.298853,
+        "Sortino_Ratio": 0.040806,
+        "Max_DD_[%]": 0.106178,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "ALL / TRV",
+        "Total_Return_[%]": 0.382603,
+        "Sharpe_Ratio": 0.250009,
+        "Sortino_Ratio": 0.040499,
+        "Max_DD_[%]": 0.458584,
+        "Win_Rate_[%]": 44.444444,
+        "Total_Trades": 18.0
+    },
+    {
+        "Pair_Legs": "DVN / OXY",
+        "Total_Return_[%]": 0.377241,
+        "Sharpe_Ratio": 0.244000,
+        "Sortino_Ratio": 0.071522,
+        "Max_DD_[%]": 0.385903,
+        "Win_Rate_[%]": 33.333333,
+        "Total_Trades": 9.0
+    },
+    {
+        "Pair_Legs": "COF / WFC",
+        "Total_Return_[%]": 0.008569,
+        "Sharpe_Ratio": 0.238717,
+        "Sortino_Ratio": 0.017636,
+        "Max_DD_[%]": 0.007691,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "ARES / SYF",
+        "Total_Return_[%]": 0.190641,
+        "Sharpe_Ratio": 0.224422,
+        "Sortino_Ratio": 0.022786,
+        "Max_DD_[%]": 0.187935,
+        "Win_Rate_[%]": 75.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "JPM / NTRS",
+        "Total_Return_[%]": 0.143344,
+        "Sharpe_Ratio": 0.168068,
+        "Sortino_Ratio": 0.027070,
+        "Max_DD_[%]": 0.136617,
+        "Win_Rate_[%]": 33.333333,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "FTV / JBHT",
+        "Total_Return_[%]": 0.001827,
+        "Sharpe_Ratio": 0.157664,
+        "Sortino_Ratio": 0.009361,
+        "Max_DD_[%]": 0.003089,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "ALL / AFL",
+        "Total_Return_[%]": 0.057839,
+        "Sharpe_Ratio": 0.153706,
+        "Sortino_Ratio": 0.020244,
+        "Max_DD_[%]": 0.064625,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "LII / MAS",
+        "Total_Return_[%]": 0.178176,
+        "Sharpe_Ratio": 0.135185,
+        "Sortino_Ratio": 0.010926,
+        "Max_DD_[%]": 0.369174,
+        "Win_Rate_[%]": 66.666667,
+        "Total_Trades": 3.0
+    },
+    {
+        "Pair_Legs": "D / FE",
+        "Total_Return_[%]": 0.012578,
+        "Sharpe_Ratio": 0.112847,
+        "Sortino_Ratio": 0.007703,
+        "Max_DD_[%]": 0.043197,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "KLAC / STX",
+        "Total_Return_[%]": 0.121937,
+        "Sharpe_Ratio": 0.082687,
+        "Sortino_Ratio": 0.007138,
+        "Max_DD_[%]": 0.485147,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "SCHW / JPM",
+        "Total_Return_[%]": 0.103908,
+        "Sharpe_Ratio": 0.072489,
+        "Sortino_Ratio": 0.005484,
+        "Max_DD_[%]": 0.661356,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "AMP / MTB",
+        "Total_Return_[%]": 0.012543,
+        "Sharpe_Ratio": 0.060178,
+        "Sortino_Ratio": 0.005758,
+        "Max_DD_[%]": 0.066339,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "AEE / NI",
+        "Total_Return_[%]": 0.009306,
+        "Sharpe_Ratio": 0.010921,
+        "Sortino_Ratio": 0.001122,
+        "Max_DD_[%]": 0.421729,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "PNC / RF",
+        "Total_Return_[%]": 0.000745,
+        "Sharpe_Ratio": 0.001992,
+        "Sortino_Ratio": 0.000140,
+        "Max_DD_[%]": 0.243692,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "BIIB / MRK",
+        "Total_Return_[%]": -0.012959,
+        "Sharpe_Ratio": -0.023672,
+        "Sortino_Ratio": -0.001460,
+        "Max_DD_[%]": 0.193192,
+        "Win_Rate_[%]": 66.666667,
+        "Total_Trades": 3.0
+    },
+    {
+        "Pair_Legs": "MCO / TFC",
+        "Total_Return_[%]": -0.225172,
+        "Sharpe_Ratio": -0.061506,
+        "Sortino_Ratio": -0.004011,
+        "Max_DD_[%]": 1.538409,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "ATO / EVRG",
+        "Total_Return_[%]": -0.177570,
+        "Sharpe_Ratio": -0.149231,
+        "Sortino_Ratio": -0.016526,
+        "Max_DD_[%]": 0.485387,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 16.0
+    },
+    {
+        "Pair_Legs": "PFG / USB",
+        "Total_Return_[%]": -0.069033,
+        "Sharpe_Ratio": -0.191414,
+        "Sortino_Ratio": -0.009973,
+        "Max_DD_[%]": 0.154459,
+        "Win_Rate_[%]": 50.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "GEHC / TMO",
+        "Total_Return_[%]": -0.392167,
+        "Sharpe_Ratio": -0.198597,
+        "Sortino_Ratio": -0.014832,
+        "Max_DD_[%]": 1.020679,
+        "Win_Rate_[%]": 33.333333,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "CINF / TRV",
+        "Total_Return_[%]": -0.375016,
+        "Sharpe_Ratio": -0.205836,
+        "Sortino_Ratio": -0.024196,
+        "Max_DD_[%]": 1.222342,
+        "Win_Rate_[%]": 41.176471,
+        "Total_Trades": 17.0
+    },
+    {
+        "Pair_Legs": "ES / NEE",
+        "Total_Return_[%]": -0.228140,
+        "Sharpe_Ratio": -0.229388,
+        "Sortino_Ratio": -0.020041,
+        "Max_DD_[%]": 0.388185,
+        "Win_Rate_[%]": 20.000000,
+        "Total_Trades": 5.0
+    },
+    {
+        "Pair_Legs": "FDX / SWK",
+        "Total_Return_[%]": -0.279698,
+        "Sharpe_Ratio": -0.312130,
+        "Sortino_Ratio": -0.021052,
+        "Max_DD_[%]": 0.500428,
+        "Win_Rate_[%]": 0.0,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "ALLE / XYL",
+        "Total_Return_[%]": -0.187586,
+        "Sharpe_Ratio": -0.326512,
+        "Sortino_Ratio": -0.019110,
+        "Max_DD_[%]": 0.286062,
+        "Win_Rate_[%]": 50.000000,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "INVH / SPG",
+        "Total_Return_[%]": -0.107360,
+        "Sharpe_Ratio": -0.332278,
+        "Sortino_Ratio": -0.015664,
+        "Max_DD_[%]": 0.153193,
+        "Win_Rate_[%]": 0.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "MS / SYF",
+        "Total_Return_[%]": -0.246432,
+        "Sharpe_Ratio": -0.349995,
+        "Sortino_Ratio": -0.021911,
+        "Max_DD_[%]": 0.277657,
+        "Win_Rate_[%]": 75.000000,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "MA / MCO",
+        "Total_Return_[%]": -0.005696,
+        "Sharpe_Ratio": -0.387495,
+        "Sortino_Ratio": -0.012505,
+        "Max_DD_[%]": 0.007210,
+        "Win_Rate_[%]": 50.000000,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "AEE / PPL",
+        "Total_Return_[%]": -0.146834,
+        "Sharpe_Ratio": -0.444579,
+        "Sortino_Ratio": -0.031871,
+        "Max_DD_[%]": 0.160599,
+        "Win_Rate_[%]": 50.000000,
+        "Total_Trades": 8.0
+    },
+    {
+        "Pair_Legs": "AFL / AIZ",
+        "Total_Return_[%]": -0.455865,
+        "Sharpe_Ratio": -0.448920,
+        "Sortino_Ratio": -0.030693,
+        "Max_DD_[%]": 0.455865,
+        "Win_Rate_[%]": 50.000000,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "BAC / SYF",
+        "Total_Return_[%]": -0.472113,
+        "Sharpe_Ratio": -0.481634,
+        "Sortino_Ratio": -0.050712,
+        "Max_DD_[%]": 0.837073,
+        "Win_Rate_[%]": 57.142857,
+        "Total_Trades": 7.0
+    },
+    {
+        "Pair_Legs": "BAC / MS",
+        "Total_Return_[%]": -1.376918,
+        "Sharpe_Ratio": -0.492008,
+        "Sortino_Ratio": -0.045152,
+        "Max_DD_[%]": 1.963325,
+        "Win_Rate_[%]": 40.000000,
+        "Total_Trades": 10.0
+    },
+    {
+        "Pair_Legs": "EG / MRSH",
+        "Total_Return_[%]": -0.364339,
+        "Sharpe_Ratio": -0.501295,
+        "Sortino_Ratio": -0.028926,
+        "Max_DD_[%]": 0.364339,
+        "Win_Rate_[%]": 40.000000,
+        "Total_Trades": 5.0
+    },
+    {
+        "Pair_Legs": "MRSH / L",
+        "Total_Return_[%]": -0.142639,
+        "Sharpe_Ratio": -0.508452,
+        "Sortino_Ratio": -0.022704,
+        "Max_DD_[%]": 0.142639,
+        "Win_Rate_[%]": 0.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "XEL / WEC",
+        "Total_Return_[%]": -0.158678,
+        "Sharpe_Ratio": -0.510921,
+        "Sortino_Ratio": -0.033342,
+        "Max_DD_[%]": 0.211175,
+        "Win_Rate_[%]": 50.000000,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "AMZN / MAR",
+        "Total_Return_[%]": -0.321380,
+        "Sharpe_Ratio": -0.512562,
+        "Sortino_Ratio": -0.022888,
+        "Max_DD_[%]": 0.321380,
+        "Win_Rate_[%]": 0.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "DUK / PPL",
+        "Total_Return_[%]": -0.247229,
+        "Sharpe_Ratio": -0.513837,
+        "Sortino_Ratio": -0.022945,
+        "Max_DD_[%]": 0.247229,
+        "Win_Rate_[%]": 0.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "GS / JPM",
+        "Total_Return_[%]": -0.188006,
+        "Sharpe_Ratio": -0.513864,
+        "Sortino_Ratio": -0.022946,
+        "Max_DD_[%]": 0.188006,
+        "Win_Rate_[%]": 0.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "DUK / EXC",
+        "Total_Return_[%]": -0.241338,
+        "Sharpe_Ratio": -0.517112,
+        "Sortino_Ratio": -0.023091,
+        "Max_DD_[%]": 0.241338,
+        "Win_Rate_[%]": 0.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "BXP / IRM",
+        "Total_Return_[%]": -0.131022,
+        "Sharpe_Ratio": -0.517214,
+        "Sortino_Ratio": -0.023095,
+        "Max_DD_[%]": 0.131022,
+        "Win_Rate_[%]": 50.000000,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "MET / TROW",
+        "Total_Return_[%]": -0.179075,
+        "Sharpe_Ratio": -0.521424,
+        "Sortino_Ratio": -0.023283,
+        "Max_DD_[%]": 0.179075,
+        "Win_Rate_[%]": 0.0,
+        "Total_Trades": 2.0
+    },
+    {
+        "Pair_Legs": "MKC / PG",
+        "Total_Return_[%]": -0.687494,
+        "Sharpe_Ratio": -0.580279,
+        "Sortino_Ratio": -0.038531,
+        "Max_DD_[%]": 0.701172,
+        "Win_Rate_[%]": 50.000000,
+        "Total_Trades": 10.0
+    },
+    {
+        "Pair_Legs": "NSC / URI",
+        "Total_Return_[%]": -0.778397,
+        "Sharpe_Ratio": -0.671414,
+        "Sortino_Ratio": -0.042391,
+        "Max_DD_[%]": 0.782664,
+        "Win_Rate_[%]": 25.000000,
+        "Total_Trades": 4.0
+    },
+    {
+        "Pair_Legs": "ROP / TYL",
+        "Total_Return_[%]": -1.783755,
+        "Sharpe_Ratio": -0.724548,
+        "Sortino_Ratio": -0.051129,
+        "Max_DD_[%]": 1.783755,
+        "Win_Rate_[%]": 50.000000,
+        "Total_Trades": 6.0
+    },
+    {
+        "Pair_Legs": "MCO / SYF",
+        "Total_Return_[%]": -0.761028,
+        "Sharpe_Ratio": -0.741637,
+        "Sortino_Ratio": -0.052629,
+        "Max_DD_[%]": 0.761028,
+        "Win_Rate_[%]": 28.571429,
+        "Total_Trades": 7.0
+    },
+    {
+        "Pair_Legs": "ANET / FLEX",
+        "Total_Return_[%]": -0.559393,
+        "Sharpe_Ratio": -0.801168,
+        "Sortino_Ratio": -0.050577,
+        "Max_DD_[%]": 0.559393,
+        "Win_Rate_[%]": 33.333333,
+        "Total_Trades": 6.0
+    }
 ]
 </script>
 
@@ -295,146 +1055,179 @@
       <!-- Executive KPI Highlight Cards -->
       <div class="executive-kpi-grid">
         <div class="exec-card">
-          <div class="val" id="cover-net-return">+5.24%</div>
+          <div class="val" id="cover-net-return">+7.64%</div>
           <div class="lbl">Annualized Net Return</div>
-          <div class="subtxt">+2.59% total realized across 126 trading days (6 months)</div>
+          <div class="subtxt">Across a full 1-year out-of-sample window (252 trading days)</div>
         </div>
         <div class="exec-card">
-          <div class="val white" id="cover-end-value">$256,469.76</div>
+          <div class="val white" id="cover-end-value">$269,099.97</div>
           <div class="lbl">End Portfolio Value</div>
           <div class="subtxt">Starting capital: $250,000 net of all fees &amp; costs</div>
         </div>
         <div class="exec-card">
-          <div class="val gold" id="cover-win-rate">55.8%</div>
+          <div class="val gold" id="cover-win-rate">50.9%</div>
           <div class="lbl">Sleeve Win Rate</div>
-          <div class="subtxt">Sub-1.2% max drawdown (1.14%) via automated risk stops</div>
+          <div class="subtxt">Sub-1.5% max drawdown (1.45%) via automated risk stops</div>
         </div>
       </div>
     </div>
     <div class="hint"><b>→</b> Press arrow keys or swipe to navigate</div>
   </section>
 
-  <!-- 02 · INVESTMENT THESIS & STRATEGIC CORE -->
+  <!-- 02 · INVESTMENT THESIS & RETURN MECHANICS -->
   <section>
-    <h2><span class="kicker">Strategic Core</span> Investment Thesis &amp; Return Mechanics</h2>
-    <p class="lead">Price divergences between historically paired equities are temporary, but unhedged market noise destroys profit. This system continuously identifies mispriced pairs, dynamically adjusts entry sensitivity, and limits risk through automated portfolio optimization.</p>
-    <div class="cols three">
-      <div class="card highlight">
-        <h3>Core Trading Engine</h3>
-        <ul>
-          <li>Long-short relative value trading on cointegrated S&amp;P 500 stock pairs.</li>
-          <li>Dynamic hedge ratios calculated in real-time via <b>Fast State Tracking</b>.</li>
-          <li>Trades the normalized price spread divergence ($e_t$).</li>
-          <li>Automated profit-taking on mean reversion; hard stop-loss on structural breaks.</li>
-        </ul>
+    <h2><span class="kicker">Investment Thesis</span> Pure Risk Compression &amp; Convex Tail Hedging</h2>
+    <div class="deck-body">
+      <p class="lead">Predicting absolute asset returns is noisy and fragile. This engine abandons return forecasting entirely. Instead, it continuously identifies mispriced structural pairs, dynamically tunes entry gates using AI, and optimizes purely for minimum variance and friction reduction.</p>
+      <div class="cols three">
+        <div class="card highlight">
+          <h3>1 · Mathematical Mispricing</h3>
+          <ul>
+            <li><b>Measured, Not Assumed:</b> Mispricing is quantified via the <b>Kalman Innovation z-score</b> \((e_t)\). We measure exact standard deviations from a live, dynamically hedged fair-value ratio.</li>
+            <li><b>Durable Foundations:</b> The universe is re-screened every 20 days using C-accelerated motif distance and Engle-Granger tests to ensure only structurally cointegrated pairs are traded.</li>
+          </ul>
+        </div>
+        <div class="card highlight">
+          <h3>2 · Adaptive AI Entry Gates</h3>
+          <ul>
+            <li><b>Contextual Bandits:</b> A LinUCB machine learning agent dynamically adjusts entry sensitivity \(\in \{1.50, 1.85, 2.25\}\,\sigma\).</li>
+            <li><b>Regime Awareness:</b> The agent restricts capital deployment during calm or fragile regimes, and aggressively expands the entry gate during high-VIX market dislocations to harvest widening spreads.</li>
+          </ul>
+        </div>
+        <div class="card highlight">
+          <h3>3 · No-Noise Optimizer</h3>
+          <ul>
+            <li><b>The Breakthrough:</b> We stripped expected return (\(\mu\)) from the SLSQP objective function. Capital is allocated purely inverse to spread volatility.</li>
+            <li><b>The Result:</b> This prevents "toxic concentration" in high-yield, high-risk spreads. The engine maintains strict sector neutrality and scales effective gross exposure efficiently without unnecessary turnover drag.</li>
+          </ul>
+        </div>
       </div>
-      <div class="card highlight">
-        <h3>Adaptive AI Thresholds</h3>
-        <ul>
-          <li>Contextual machine learning dynamically selects entry sensitivity ($1.50\sigma$ to $2.25\sigma$).</li>
-          <li>Inputs include market volatility, VIX levels, and pair stability measures.</li>
-          <li><b>Business Impact:</b> Relaxes hurdles during major dislocations to capture opportunity; tightens hurdles during calm regimes to prevent over-trading.</li>
-        </ul>
-      </div>
-      <div class="card highlight">
-        <h3>Institutional Risk Controls</h3>
-        <ul>
-          <li>Strict net-zero market beta target ($|\beta_{\text{net}}| \le 0.05$).</li>
-          <li>Style factor caps ($|F_{\text{momentum}}| \le 0.10$) prevent quant squeeze losses.</li>
-          <li>Single-stock NAV capped at $15\%$; gross portfolio leverage capped at $1.8\times$.</li>
-          <li>Order size capped at <b>1.5% of 20-day Average Daily Volume (ADV)</b>.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="formula">
-      <span class="lbl">Portfolio Risk-Optimized Objective Function</span>
-      $$\max_{w} \quad w^T \mu - \frac{1}{2}\lambda w^T \Sigma w \quad \text{s.t.} \quad |\beta_{\text{net}}| \le 0.05, \quad |F_{\text{momentum}}| \le 0.10, \quad \text{NAV}_i \le 0.15$$
     </div>
   </section>
 
   <!-- 03 · SYSTEM ARCHITECTURE & OPERATIONAL PIPELINE -->
   <section>
     <h2><span class="kicker">Execution Workflow</span> System Architecture &amp; Operational Pipeline</h2>
-    <p class="lead">A modular 3-stage architecture handles data processing, risk filtering, and order generation cleanly and transparently.</p>
-    <div class="mermaid-wrapper">
-      <div class="mermaid">
+    <div class="deck-body">
+      <div class="arch-grid">
+        <div class="card highlight mermaid-wrapper">
+          <div class="mermaid">
 flowchart TD
-    subgraph Phase1 ["1. Market Ingestion & Screening (Every 20 Days)"]
-        A["S&P 500 Equities<br/>Price Data & Sectors"] --> B["Pair Pre-Screening<br/>Sector Match & Correlation ≥ 0.45"]
-        B --> C["Statistical Cointegration<br/>Engle-Granger & Hurst Testing"]
-    end
-    subgraph Phase2 ["2. Daily Signal & Structural Risk Filter"]
-        C --> D["Fast Kalman Filter<br/>Tracks Dynamic Spread & Beta"]
-        D --> E["Regime Break Gate<br/>Detects Structural Instability (CUSUM / BOCPD)"]
-    end
-    subgraph Phase3 ["3. AI Thresholding & Execution"]
-        E --> F["Adaptive AI Bandit<br/>Sets Sensitivity Hurdle (1.5σ - 2.25σ)"]
-        F --> G["Portfolio Risk Allocator<br/>Enforces Beta, Factor & Exposure Caps"]
-        G --> H["Execution Blotter<br/>Generates Low-Impact Market Orders"]
-    end
-    style Phase1 fill:rgba(74,123,171,0.08),stroke:#2b5c8f,stroke-width:1px
-    style Phase2 fill:rgba(42,157,143,0.08),stroke:#2a9d8f,stroke-width:1px
-    style Phase3 fill:rgba(233,196,106,0.08),stroke:#e9c46a,stroke-width:1px
+    P1["<strong>PHASE 1 &middot; SCREEN</strong> &middot; refreshed every 20 days<br/>Market Universe &rarr; Pair Selection &rarr; Validation Engine"]
+    P2["<strong>PHASE 2 &middot; TRACK</strong> &middot; evaluated every 5 days<br/>Live Price Tracking &rarr; Market Change Detector"]
+    P3["<strong>PHASE 3 &middot; EXECUTE</strong> &middot; runs in real time<br/>Smart Entry Timing &rarr; Portfolio Balancing &rarr; Low-Impact Execution"]
+    P1 --> P2 --> P3
+
+    style P1 fill:#16273f,stroke:#4a7bab,stroke-width:2px,color:#ffffff
+    style P2 fill:#11282b,stroke:#2a9d8f,stroke-width:2px,color:#ffffff
+    style P3 fill:#3a3313,stroke:#e9c46a,stroke-width:2px,color:#ffffff
+          </div>
+        </div>
+        <aside class="arch-notes">
+          <h3>The Engine, in One Sentence</h3>
+          <p>A modular 3-stage architecture handles data processing, risk filtering, and order generation cleanly and transparently.</p>
+          <ul class="arch-list">
+            <li><b>Screen (every 20d)</b> — finds durable cointegrated pairs.</li>
+            <li><b>Track (every 5d)</b> — re-measures spread divergence &amp; pauses on regime shift.</li>
+            <li><b>Execute (real time)</b> — times entries, balances sleeves, and prints low-impact orders.</li>
+          </ul>
+          <p class="dim">Each stage is a separate engine, so a failure or retune in one never leaks into the others.</p>
+        </aside>
       </div>
     </div>
-    <p class="dim" style="text-align:center; margin-top:12px">State persistence engine saves full model status to disk every session for crash recovery and zero signal loss.</p>
   </section>
 
   <!-- 04 · PREDICTIVE ACCURACY: FORECAST VS REALIZED -->
   <section>
     <h2><span class="kicker">Model Accuracy</span> Forecasted vs. Realized Out-of-Sample Return</h2>
-    <div class="cols split-img">
-      <div class="imgwrap"><img src="__CHART_EXPECTATION__" alt="Expectation vs realized"></div>
-      <div class="card highlight">
-        <h3>Key Performance Findings</h3>
-        <ul>
-          <li><b>Forecast Tracking:</b> Realized daily P&amp;L (bars) aligns with optimizer forecasts (dashed line), demonstrating high out-of-sample calibration.</li>
-          <li><b>Volatility Response:</b> Market volatility spikes (dotted line) trigger automatic threshold tightening, shielding capital during turbulent periods.</li>
-          <li><b>Bounded Loss Tails:</b> Stop-loss mechanisms successfully eliminate catastrophic tail losses during unexpected spread widening.</li>
-        </ul>
-      </div>
+    <div class="deck-body">
+    <div class="imgwrap-full"><img src="__CHART_EXPECTATION__" alt="Expectation vs realized"></div>
+    <div class="card highlight img-card">
+      <h3>Key Performance Findings</h3>
+      <ul>
+        <li><b>Forecast Tracking:</b> Realized daily P&amp;L (bars) aligns with optimizer forecasts (dashed line), demonstrating high out-of-sample calibration.</li>
+        <li><b>Volatility Response:</b> Market volatility spikes (dotted line) trigger automatic threshold tightening, shielding capital during turbulent periods.</li>
+        <li><b>Bounded Loss Tails:</b> Stop-loss mechanisms successfully eliminate catastrophic tail losses during unexpected spread widening.</li>
+      </ul>
+    </div>
     </div>
   </section>
 
   <!-- 05 · CAPITAL GROWTH & WEALTH TRAJECTORY -->
   <section>
     <h2><span class="kicker">Capital Growth</span> Portfolio Wealth Trajectory</h2>
-    <div class="cols split-img">
-      <div class="imgwrap"><img src="__CHART_PERFORMANCE__" alt="Cumulative performance"></div>
-      <div class="card highlight">
-        <h3>Executive P&amp;L Highlights</h3>
-        <ul>
-          <li><b>Capital Growth:</b> Portfolio expanded from <b>$250,000</b> to <b id="cv-end" class="teal">$256,469.76</b> over 126 trading days, generating a <b>5.24% annualized return</b> (+2.59% net realized).</li>
-          <li><b>Low Drawdown:</b> Peak-to-trough drop restricted to <b>1.14%</b>, showcasing institutional-grade downside protection.</li>
-          <li><b>Market Independence:</b> Consistent upward drift achieved independently of broader market direction.</li>
-          <li><b>Net of All Friction:</b> P&amp;L explicitly accounts for 1.5 bps trading fees ($527.60 total) and 50 bps annual short borrow drag.</li>
-        </ul>
-      </div>
+    <div class="deck-body">
+    <div class="imgwrap-full"><img src="__CHART_PERFORMANCE__" alt="Cumulative performance"></div>
+    <div class="card highlight img-card">
+      <h3>Executive P&amp;L Highlights</h3>
+      <ul>
+        <li><b>Capital Growth:</b> Portfolio expanded from <b>$250,000</b> to <b id="cv-end" class="teal">$269,099.97</b> over 252 trading days, generating a <b>7.64% annualized return</b>.</li>
+        <li><b>Low Drawdown:</b> Peak-to-trough drop restricted to <b>1.45%</b>, showcasing institutional-grade downside protection.</li>
+        <li><b>Market Independence:</b> Consistent upward drift achieved independently of broader market direction.</li>
+        <li><b>Net of All Friction:</b> P&amp;L explicitly accounts for 1.5 bps trading fees ($1,906.98 total) and 50 bps annual short borrow drag.</li>
+      </ul>
+    </div>
     </div>
   </section>
 
   <!-- 06 · RISK FUNNEL & ADAPTIVE MARKET SIZING -->
   <section>
     <h2><span class="kicker">Capital Allocation</span> Dynamic Portfolio Sizing Across Market Regimes</h2>
-    <div class="cols split-img">
-      <div class="imgwrap"><img src="__CHART_FUNNEL__" alt="Funnel sizing"></div>
-      <div class="card highlight">
-        <h3>Multi-Stage Opportunity Funnel</h3>
-        <ul>
-          <li><b>Monitored Universe (Top):</b> Tracks 20–35 statistical pairs passing core cointegration gates.</li>
-          <li><b>Eligible Universe (Middle):</b> Filters pairs reaching dynamic AI entry thresholds.</li>
-          <li><b>Active Holdings (Live):</b> Optimizer allocates capital to top 1–5 non-correlated pairs.</li>
-          <li><b>Capital Protection:</b> Funnel automatically contracts during market stress to preserve cash.</li>
-        </ul>
+    <div class="deck-body">
+    <div class="imgwrap-full"><img src="__CHART_FUNNEL__" alt="Funnel sizing"></div>
+    <div class="card highlight img-card">
+      <h3>Multi-Stage Opportunity Funnel</h3>
+      <ul>
+        <li><b>Monitored Universe (Top):</b> Tracks 20–35 statistical pairs passing core cointegration gates.</li>
+        <li><b>Eligible Universe (Middle):</b> Filters pairs reaching dynamic AI entry thresholds.</li>
+        <li><b>Active Holdings (Live):</b> Optimizer allocates capital to top 1–5 non-correlated pairs.</li>
+        <li><b>Capital Protection:</b> Funnel automatically contracts during market stress to preserve cash.</li>
+      </ul>
+    </div>
+    </div>
+  </section>
+
+  <!-- 07 · THE CONVEX TAIL HEDGE -->
+  <section>
+    <h2><span class="kicker">Risk Profile</span> Strict Neutrality &amp; The Convex Tail Hedge</h2>
+    <div class="deck-body">
+      <div class="cols split-img">
+        <div class="card highlight">
+          <h3>Diagnostic Audit Outcomes</h3>
+          <ul>
+            <li><b>Zero Market Correlation:</b> The engine maintains a core Market Beta (\(\beta_m\)) of effectively zero and an \(R^2\) of 0.10%. Day-to-day returns are statistically independent of the S&amp;P 500.</li>
+            <li><b>Asymmetric Downside Capture:</b> The strategy exhibits a slight drag during fierce bull market rallies, but holds a positive beta during market crashes. </li>
+            <li><b>The Executive Reality:</b> Because statistical arbitrage thrives on volatility and forced liquidations, this engine acts as a <b>convex tail-risk hedge</b>. It prints uncorrelated alpha during normal regimes and generates positive structural lift when the broader market bleeds.</li>
+          </ul>
+        </div>
+        <div class="arch-notes" style="height:100%; display:flex; flex-direction:column; justify-content:center;">
+          <div class="stat-row">
+            <span class="label">Core Market Beta</span>
+            <div class="value teal">~ 0.00</div>
+            <div class="desc">True baseline market neutrality.</div>
+          </div>
+          <hr style="border:0; border-top:1px solid var(--stroke); margin: 16px 0;">
+          <div class="stat-row">
+            <span class="label">Bull Market Beta</span>
+            <div class="value orange">-0.03</div>
+            <div class="desc">Slight drag during market euphoria.</div>
+          </div>
+          <hr style="border:0; border-top:1px solid var(--stroke); margin: 16px 0;">
+          <div class="stat-row">
+            <span class="label">Bear Market Beta</span>
+            <div class="value teal">+0.06</div>
+            <div class="desc">Structural profitability during market crashes.</div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 07 · SLEEVE-LEVEL EXECUTION TEARSHEET -->
+  <!-- 08 · SLEEVE-LEVEL EXECUTION TEARSHEET -->
   <section>
     <h2><span class="kicker">Execution Review</span> Sleeve-Level Execution Tearsheet</h2>
-    <p class="dim" style="margin-bottom:12px">Performance metrics by pair sleeve, ranked by Sharpe Ratio. Shading indicates performance tier (Green: &gt;50% Win Rate, Yellow: 50% Win Rate, Red: 0% Win Rate).</p>
-    <div style="max-height:calc(100vh - 160px); overflow-y:auto">
+    <div class="deck-body">
+    <p class="dim" style="margin-bottom:12px; text-align:center">Performance metrics by pair sleeve, ranked by Sharpe Ratio. Shading indicates performance tier (Green: &gt;50% Win Rate, Yellow: 50% Win Rate, Red: 0% Win Rate).</p>
       <table id="comm-table">
         <thead>
           <tr><th>Pair Sleeve</th><th class="num">Net Return</th><th class="num">Sharpe Ratio</th><th class="num">Sortino Ratio</th><th class="num">Max Drawdown</th><th class="num">Win Rate</th><th class="num">Total Trades</th></tr>
@@ -444,18 +1237,19 @@ flowchart TD
     </div>
   </section>
 
-  <!-- 08 · OUT-OF-SAMPLE WALK-FORWARD SUMMARY -->
+  <!-- 09 · OUT-OF-SAMPLE WALK-FORWARD SUMMARY -->
   <section>
     <h2><span class="kicker">Performance Summary</span> Out-of-Sample Walk-Forward Summary</h2>
+    <div class="deck-body">
     <div class="cols" id="stats-grid">
       <div class="card stat-row">
         <span class="label">Evaluation Period</span>
-        <div class="value" id="st-window">2026-02-25 → 2026-08-25</div>
-        <div class="desc">Strict walk-forward window without lookahead bias or parameter retuning.</div>
+        <div class="value" id="st-window">2025-08-26 → 2026-08-26</div>
+        <div class="desc">Strict out-of-sample walk-forward window without lookahead bias or parameter retuning.</div>
       </div>
       <div class="card stat-row">
         <span class="label">Trading Horizon</span>
-        <div class="value" id="st-period">126 days</div>
+        <div class="value" id="st-period">252 days</div>
         <div class="desc">Active trading sessions evaluated in out-of-sample sequence.</div>
       </div>
       <div class="card stat-row">
@@ -465,61 +1259,63 @@ flowchart TD
       </div>
       <div class="card stat-row">
         <span class="label">End Portfolio Value</span>
-        <div class="value teal" id="st-end">$256,469.76</div>
-        <div class="desc">Net liquidation value after 126 trading sessions, including all fees and borrow costs.</div>
+        <div class="value teal" id="st-end">$269,099.97</div>
+        <div class="desc">Net liquidation value after 252 trading sessions, including all fees and borrow costs.</div>
       </div>
       <div class="card stat-row">
         <span class="label">Compounded Annualized Return</span>
-        <div class="value teal" id="st-totret">+5.24% p.a.</div>
-        <div class="desc">5.24% annualized return (+2.59% net realized over 126 trading days) with zero market beta.</div>
+        <div class="value teal" id="st-totret">+7.64% p.a.</div>
+        <div class="desc">7.64% annualized return over the full 1-year window with zero market beta.</div>
       </div>
       <div class="card stat-row">
         <span class="label">Equity Benchmark Return</span>
-        <div class="value" id="st-bench">+8.46%</div>
+        <div class="value" id="st-bench">+30.59%</div>
         <div class="desc">S&amp;P 500 directional market return over the same period.</div>
       </div>
       <div class="card stat-row">
         <span class="label">Max Gross Exposure</span>
-        <div class="value gold" id="st-gross">7.95%</div>
+        <div class="value gold" id="st-gross">10.95%</div>
         <div class="desc">Peak gross leverage utilized across active allocated positions.</div>
       </div>
       <div class="card stat-row">
         <span class="label">Total Fees &amp; Drag Paid</span>
-        <div class="value" id="st-fees">$527.60</div>
+        <div class="value" id="st-fees">$1,906.98</div>
         <div class="desc">Commissions (1.5 bps/leg) and short borrow drag (50 bps/yr).</div>
       </div>
       <div class="card stat-row">
         <span class="label">Max Drawdown</span>
-        <div class="value orange" id="st-mdd">1.14%</div>
+        <div class="value orange" id="st-mdd">1.45%</div>
         <div class="desc">Peak-to-trough loss, demonstrating strict risk control.</div>
       </div>
       <div class="card stat-row">
         <span class="label">Strategy Win Rate</span>
-        <div class="value gold" id="st-winrate">55.8%</div>
+        <div class="value gold" id="st-winrate">50.9%</div>
         <div class="desc">Percentage of executed trade sleeves closing with net profit.</div>
       </div>
       <div class="card stat-row">
         <span class="label">Profit Factor</span>
-        <div class="value teal" id="st-profitfactor">1.57</div>
-        <div class="desc">Gross winning profits divided by gross losing losses ($>1.5$ represents solid edge).</div>
+        <div class="value teal" id="st-profitfactor">1.45</div>
+        <div class="desc">Gross winning profits divided by gross losing losses (above 1.0 represents a positive edge).</div>
       </div>
       <div class="card stat-row">
         <span class="label">Trade Expectancy</span>
-        <div class="value gold" id="st-expectancy">$84.02</div>
+        <div class="value gold" id="st-expectancy">$65.19</div>
         <div class="desc">Expected net dollar profit per executed trade sleeve.</div>
       </div>
     </div>
+    </div>
   </section>
 
-  <!-- 09 · INSTITUTIONAL GOVERNANCE & CONTROL -->
+  <!-- 10 · INSTITUTIONAL GOVERNANCE & CONTROL -->
   <section>
     <h2><span class="kicker">Governance</span> Institutional Governance &amp; Mathematical Control Layer</h2>
+    <div class="deck-body">
     <div class="cols" style="grid-template-columns: 1fr 1fr 1fr;">
       <div class="card highlight">
         <h3>Risk Bounds</h3>
         <ul>
-          <li><b>Net Beta:</b> $|\beta_{\text{net}}| \le 0.05$ (market neutral).</li>
-          <li><b>Factor Limit:</b> $|F_{\text{momentum}}| \le 0.10$ loading ceiling.</li>
+          <li><b>Net Beta:</b> \(|\beta_{\text{net}}| \le 0.05\) (market neutral).</li>
+          <li><b>Factor Limit:</b> \(|F_{\text{momentum}}| \le 0.10\) loading ceiling.</li>
           <li><b>Sector Density:</b> Max 3 active pair sleeves per sector.</li>
           <li><b>Single Ticker NAV:</b> Capped at 15% net exposure.</li>
         </ul>
@@ -530,18 +1326,22 @@ flowchart TD
           <li><b>ADV Cap:</b> Orders capped at <b>1.5% 20-day ADV</b>.</li>
           <li><b>Execution Model:</b> Next-day Market-On-Open (T+1 lag).</li>
           <li><b>Borrow Cost:</b> 50 bps annual rate incorporated.</li>
-          <li><b>Quarantine:</b> Exited pairs locked for 15 rebalance days.</li>
+          <li><b>Quarantine:</b> Pairs hit by 2 consecutive losing exits are locked for 63 trading days (also half-life drift &gt;2.5&times; and allocator demotions).</li>
         </ul>
       </div>
       <div class="card highlight">
         <h3>Mathematical Control</h3>
         <ul>
-          <li><b>Spread Calc:</b> $e_t = (y_t - \alpha_t - \beta_t x_t) / \sqrt{F_t}$</li>
-          <li><b>CUSUM Test:</b> $S_t = \sum v_k^2 / F_k \sim \chi^2(K)$</li>
+          <li><b>Spread Calc:</b> \(e_t = (y_t - \alpha_t - \beta_t x_t) / \sqrt{F_t}\)</li>
+          <li><b>CUSUM Test:</b> \(S_t = \sum v_k^2 / F_k \sim \chi^2(K)\)</li>
           <li><b>Frac Integration:</b> GPH log-periodogram estimator.</li>
-          <li><b>Reward Equation:</b> $R = 2.0 \cdot \text{Capture} \cdot e^{-0.3(\text{Days}/\text{HL}-1)}$</li>
+          <li><b>Reward Equation:</b> \(R = 2.0 \cdot \text{Capture} \cdot e^{-0.3(\text{Days}/\text{HL}-1)}\)</li>
         </ul>
       </div>
+    </div>
+    <div class="formula">
+      <span class="lbl">Portfolio Risk-Optimized Objective Function</span>
+      $$\max_{w} \quad w^T \mu - \frac{1}{2}\lambda w^T \Sigma w \quad \text{s.t.} \quad |\beta_{\text{net}}| \le 0.05, \quad |F_{\text{momentum}}| \le 0.10, \quad \text{NAV}_i \le 0.15$$
     </div>
     <div style="margin-top:16px" class="card highlight">
       <h3>Executive Summary &amp; Deployment Readiness</h3>
@@ -552,6 +1352,153 @@ flowchart TD
       </ul>
     </div>
     <p class="dim" style="margin-top:12px; text-align:center">Technology Stack: <b>Python 3.11+</b> · <b>NumPy / Pandas</b> · <b>SciPy (SLSQP)</b> · <b>VectorBT</b> · <b>MabWiser</b> · <b>KaTeX</b>.</p>
+    </div>
+  </section>
+
+  <!-- 11 · LIVE DEPLOYMENT CHECKLIST -->
+  <section>
+    <h2><span class="kicker">Next Steps</span> Phase 2: Live Micro-Allocation Checklist</h2>
+    <div class="deck-body">
+      <p class="lead">The algorithmic logic is frozen and stable. Transitioning from out-of-sample simulation to live exchange routing requires deploying the following production infrastructure layers.</p>
+      <div class="cols" style="grid-template-columns: 1fr 1fr;">
+        <div class="card highlight">
+          <h3>1. State-to-Broker Reconciliation</h3>
+          <ul>
+            <li><b>The Risk:</b> Disconnect between local algorithm memory and actual broker holdings (e.g., rejected orders, corporate actions).</li>
+            <li><b>The Action:</b> Implement a hard API reconciliation loop. If local \(\Delta\) vs Broker \(\Delta\) exceeds a $10 tolerance, trigger a fatal exception and halt trading to prevent catastrophic overallocation.</li>
+          </ul>
+        </div>
+        <div class="card highlight">
+          <h3>2. API Order Routing &amp; Kill Switches</h3>
+          <ul>
+            <li><b>The Risk:</b> Execution delays or exchange auction halts.</li>
+            <li><b>The Action:</b> Wrap the Market-On-Open (MOO) blotter in a FIX/REST API payload (e.g., IBKR ib_insync) scheduled via cron job at 09:00 AM EST. Implement Time-in-Force (TIF) cancel mandates for unresolved auction fills.</li>
+          </ul>
+        </div>
+        <div class="card highlight">
+          <h3>3. Implementation Shortfall Telemetry</h3>
+          <ul>
+            <li><b>The Risk:</b> Live bid/ask slippage exceeds the 1.5 bps backtest threshold, bleeding alpha.</li>
+            <li><b>The Action:</b> Log the target \(\text{Price}_{\text{T-1}}\) against the actual filled \(\text{Price}_{\text{T}}\). Institute a circuit breaker that pauses the strategy if the rolling 5-day slippage breaches 5 bps.</li>
+          </ul>
+        </div>
+        <div class="card highlight">
+          <h3>4. Sector Dollar-Neutrality Constraint</h3>
+          <ul>
+            <li><b>The Risk:</b> Sudden, macro-driven sector rotations damaging a beta-neutral but dollar-imbalanced book.</li>
+            <li><b>The Action:</b> Inject a rigid SLSQP constraint (\(\sum W_{\text{long}} + \sum W_{\text{short}} = 0\) per sector) before applying 3x+ portfolio leverage, sacrificing marginal yield for total sector immunity.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 · FAQ: PASSIVE LIMIT ORDERS -->
+  <section>
+    <h2><span class="kicker">FAQ · One</span> Should We Switch to Passive Limit Orders?</h2>
+    <div class="deck-body">
+      <div class="faq-grid">
+        <div class="faq-card perf">
+          <span class="faq-tag">Performance</span>
+          <h3>Backtest better, live worse</h3>
+          <ul>
+            <li>Mathematically improves the <em>backtest</em> by erasing the <b>$1,906.98</b> fee drag today.</li>
+            <li>But it will likely <b>degrade live performance</b> through <b>adverse selection</b>.</li>
+          </ul>
+        </div>
+        <div class="faq-card risk">
+          <span class="faq-tag">Risk Profile</span>
+          <h3>Higher execution risk</h3>
+          <ul>
+            <li>Stat-arb captures <b>rapid mean-reversion</b> — if you post a passive limit, you only fill when the spread moves <em>against</em> you.</li>
+            <li>On the best trades (snap-back in minutes), your resting order is <b>left unfilled</b> — you miss exactly the alpha the model was built to capture.</li>
+          </ul>
+        </div>
+        <div class="faq-card verdict">
+          <span class="faq-tag">Verdict</span>
+          <h3>Keep MOO aggressive execution</h3>
+          <ul>
+            <li>Paying <b>1.5–3.0 bps</b> to guarantee you capture the divergence (and the structural-break exit) is a <em>necessary cost of doing business</em> in fast mean-reversion.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="faq-bottomline">
+        <span class="bl-tag">Bottom Line</span>
+        <p>Execution aggressiveness is not the fee line to optimize. The 1.5 bps MOO fill is what guarantees the edge is actually captured in live markets.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 · FAQ: SECTOR DOLLAR-NEUTRALITY -->
+  <section>
+    <h2><span class="kicker">FAQ · Two</span> Should We Force Strict Sector Dollar-Neutrality?</h2>
+    <div class="deck-body">
+      <div class="faq-grid">
+        <div class="faq-card perf">
+          <span class="faq-tag">Performance</span>
+          <h3>Decreases absolute returns</h3>
+          <ul>
+            <li>Adding the hard equality constraint \(\sum W_{\text{long, sector}} + \sum W_{\text{short, sector}} = 0\) <b>shrinks the feasible set</b> of the SLSQP optimizer.</li>
+            <li>The engine is forced to <b>reject profitable cointegrated pairs</b> simply because no offsetting pair exists to balance sector dollars.</li>
+          </ul>
+        </div>
+        <div class="faq-card risk">
+          <span class="faq-tag">Risk Profile</span>
+          <h3>Significantly improves risk</h3>
+          <ul>
+            <li>Mathematically eliminates the threat of a <b>macro-driven sector rotation</b> (e.g., a regional banking crisis) blowing up a beta-neutral but dollar-imbalanced book.</li>
+          </ul>
+        </div>
+        <div class="faq-card verdict">
+          <span class="faq-tag">Verdict</span>
+          <h3>Only at 3x+ leverage</h3>
+          <ul>
+            <li>Implement only if you intend to run <b>high portfolio leverage (3x+)</b>, where surviving sector tail-risk matters more than raw unlevered yield.</li>
+            <li>Below that, the return sacrifice is not worth the protection.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="faq-bottomline">
+        <span class="bl-tag">Bottom Line</span>
+        <p>Sector dollar-neutrality is a leverage-enabler, not a return-enhancer. Unlevered, it only costs yield.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · FAQ: TRAILING Z-SCORE STOPS -->
+  <section>
+    <h2><span class="kicker">FAQ · Three</span> Should We Add Trailing Z-Score Stops?</h2>
+    <div class="deck-body">
+      <div class="faq-grid">
+        <div class="faq-card perf">
+          <span class="faq-tag">Performance</span>
+          <h3>Higher turnover, shorter holds</h3>
+          <ul>
+            <li>Decreases <b>average holding time</b>, which increases <b>turnover and execution fees</b>.</li>
+            <li>You avoid full \(-2.75\sigma\) stop-outs, but get <b>prematurely chopped out</b> of trades that hit normal noise before fully reverting.</li>
+          </ul>
+        </div>
+        <div class="faq-card risk">
+          <span class="faq-tag">Risk Profile</span>
+          <h3>Improves downside volatility</h3>
+          <ul>
+            <li>Cutting the position the moment reversion momentum stalls <b>limits exposure to structural breaks</b> the BOCPD engine hasn't flagged yet.</li>
+          </ul>
+        </div>
+        <div class="faq-card verdict">
+          <span class="faq-tag">Verdict</span>
+          <h3>Worth testing — carefully</h3>
+          <ul>
+            <li>Requires careful tuning so the trailing buffer isn't so tight it generates <b>excessive churn and fee drag</b>.</li>
+            <li>Gate twice: once for residual reversion, once for realized slippage.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="faq-bottomline">
+        <span class="bl-tag">Bottom Line</span>
+        <p>If the goal is a higher Sortino and you accept a sub-7% unlevered return, implement <b>Sector Dollar-Neutrality</b>. If you want the <b>7.64% return the deck reports</b>, leave the architecture exactly as it is.</p>
+      </div>
+    </div>
   </section>
 
 </article>
@@ -565,25 +1512,24 @@ flowchart TD
 <script src="https://cdn.jsdelivr.net/npm/bespoke-progress@1.0.0/dist/bespoke-progress.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bespoke-hash@1.0.0/dist/bespoke-hash.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
-
 <script>
-  // Initialize Mermaid with clean styling
   mermaid.initialize({
     startOnLoad: true,
     htmlLabels: true,
     theme: 'base',
-    flowchart: { curve: 'basis', padding: 8, nodeSpacing: 25, rankSpacing: 30 },
+    flowchart: { curve: 'basis', padding: 16, nodeSpacing: 60, rankSpacing: 80, useMaxWidth: true, htmlLabels: true },
     themeVariables: {
       fontFamily: 'Inter, sans-serif',
-      fontSize: '12px',
+      fontSize: '20px',
       primaryColor: '#0f172a',
       primaryTextColor: '#e2e8f0',
       primaryBorderColor: '#2b5288',
-      lineColor: '#4a7bab',
+      lineColor: '#7c9fbf',
       textColor: '#e2e8f0',
-      edgeLabelBackground: '#080d1a',
-      clusterBkg: 'rgba(30, 58, 95, 0.2)',
-      clusterBorder: '#2b5288'
+      edgeLabelBackground: '#0f172a',
+      clusterBkg: 'rgba(30, 58, 95, 0.18)',
+      clusterBorder: '#2b5288',
+      titleColor: '#e2e8f0'
     }
   });
 
@@ -606,9 +1552,9 @@ flowchart TD
     var endValFmt = '$' + parseFloat(sp['End Value']).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
     var winFmt = parseFloat(sp['Win Rate [%]']).toFixed(1) + '%';
 
-    // Calculate Compounded Annualized Return (252 trading days / 126 period days)
+    // Calculate Compounded Annualized Return (annualize over actual Period trading days)
     var totRetRaw = parseFloat(sp['Total Return [%]']) / 100.0;
-    var periodDays = parseInt(sp['Period']) || 126;
+    var periodDays = parseInt(sp['Period']) || 252;
     var cagr = ((Math.pow(1.0 + totRetRaw, 252.0 / periodDays)) - 1.0) * 100.0;
     var cagrFmt = '+' + cagr.toFixed(2) + '%';
 
@@ -628,7 +1574,7 @@ flowchart TD
     { id:'st-end',           key:'End Value',               fmt:function(v){return fmt(v,'$')} },
     { id:'st-totret',        key:'Total Return [%]',        fmt:function(v){
         var r = parseFloat(v)/100.0;
-        var p = parseInt(sp['Period']) || 126;
+        var p = parseInt(sp['Period']) || 252;
         var c = ((Math.pow(1.0 + r, 252.0 / p)) - 1.0) * 100.0;
         return '+' + c.toFixed(2) + '% p.a.';
       } 

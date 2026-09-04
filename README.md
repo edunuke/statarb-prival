@@ -57,6 +57,36 @@ The system is organized around a **Ghost → Eligible → Live** funnel:
 
 > Note: `run_unified_pipeline` also attempts to load `universe_daily_open.csv` (the `close` → `open` sibling) for open-price execution; if missing, it falls back to close prices.
 
+## Changelog — Functional Evolution Across Versions
+
+The pipeline evolved incrementally from `statarb_1.0.ipynb` through `statarb_1.4.ipynb`. Each version added concrete functional changes (cosmetic renames/comments are omitted). The artifacts for each run are written to `results/{n}/`:
+
+### v1.0 → v1.1 — Dynamic dual-trigger engine + funnel attribution
+- **Dynamic rebalancing**: replaced the fixed 5-day rebalance schedule with a **dual-trigger evaluator** — rebalances on any signal exit, new signal entry, L-infinity weight drift ≥ 5%, or the initial day.
+- **Turnover penalty in optimizer**: SLSQP objective now deducts estimated round-trip turnover cost (fees + slippage) from net return; `Turnover_Cost_Drag` tracked per allocation.
+- **Shadow funnel tracking**: added equal-weighted Ghost and Eligible master weight matrices alongside the live book; runs parallel shadow backtests and prints a **funnel conversion attribution report** (annualized return and Sortino per tier, plus marginal bandit and optimizer deltas).
+- **Daily cooldown accounting**: cooldown timers now decrement every day rather than only on rebalance days.
+- **Periodic screening counter**: universe screening cadence tracked via `days_since_screening` instead of a rebalance-step modulo.
+- **Improved state persistence**: safe directory creation (`os.makedirs(..., exist_ok=True)`), checkpoint path moved under `artifacts/model_A/`, and walk-forward progress telemetry added to console output.
+- **Diagnostics**: cumulative performance plot now overlays live, forecast, eligible-shadow, and ghost-shadow equity curves; added `compute_sortino_ratio` helper.
+
+### v1.1 → v1.2 — Weight-drift evaluator extraction
+- Extracted `ConvexPortfolioOptimizer.calculate_max_weight_drift()` (L-infinity norm `‖w_current − w_target‖∞`) used by the dual-trigger rebalancing gate.
+- Console telemetry trimmed (cosmetic); parameters regrouped by theme.
+
+### v1.2 → v1.3 — Min-variance optimizer + consecutive-loss quarantine
+- **Removed return-forecast noise (mu) from the objective**: the allocator now optimizes **`risk + turnover` only** (pure min-variance under constraints), eliminating dependence on noisy expected-return estimates.
+- **Full leverage scaling**: replaced the gross-exposure inequality with an **equality constraint** forcing deployment up to the gross cap (`effective_target_gross = min(max_gross, N × sleeve_cap)`); SLSQP failures fall back to analytic inverse-variance weights.
+- **Inverse-volatility init**: optimizer warm-up uses inverse-volatility weights scaled to the target gross instead of a naive equal-weight guess.
+- **Consecutive-loss quarantine gate**: persistent `loss_streak_tracker` (checkpointed) — any pair with 2 consecutive losing exits (or stop-loss/structural-break) is quarantined for **63 trading days** (up from the 15-day cooldown); half-life drift demotions now use the same quarantine window.
+- `quarantine_days` config param added (default 63).
+
+### v1.3 → v1.4 — Market-neutrality audit + screener speedup
+- **`MarketNeutralityDiagnosticEngine`** (new): post-hoc governance audit of the live return series — single-factor CAPM regression (annualized alpha, β, t-stat, p-value, R²), asymmetric bull/bear down-tail beta, and optional multi-factor style regression (Fama-French/Barra); produces a PASS/FAIL audit vs bounds (|β| ≤ 0.03, R² ≤ 0.01, |factor loading| ≤ 0.05) and is invoked at the end of the pipeline.
+- **Fast pair screener**: pair screening now passes lightweight NumPy arrays (not DataFrames) to the parallel worker (O(1) memory footprint), short-circuits bad pairs by computing the cheap sliding AB motif distance **before** the expensive Engle–Granger test, and replaces the O(N²) Python pair loop with **vectorized NumPy matrix masking / sector-match broadcasting**.
+- Orchestrator integrates the neutrality audit report into terminal output.
+
+## Parameters
 
 | Parameter | Definition | Value / Range |
 | :--- | :--- | :--- |

@@ -14,8 +14,8 @@ CHART_FILES = {
 }
 
 _CANDIDATES = (
-    BASE_DIR / "results" / "1",
-    BASE_DIR.parent.parent / "results" / "1",
+    BASE_DIR / "results" / "4",
+    BASE_DIR.parent.parent / "results" / "4",
 )
 RESULTS_DIR = next((p for p in _CANDIDATES if p.exists()), _CANDIDATES[-1])
 
