@@ -1,0 +1,10 @@
+# Build context is dev/. Exclude notebooks, data, model checkpoints.
+**/__pycache__/
+**/*.pyc
+**/.git/
+**/venv/
+**/.venv/
+*.pkl
+*.csv
+*.ipynb
+**/lightning_logs/

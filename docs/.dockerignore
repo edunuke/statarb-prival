@@ -1,0 +1,14 @@
+# Build context is docs/ — the deck app lives in docs/deck.
+# Ignore the notebook, data, artifacts and other docs content.
+.git
+dev/
+invest/
+optim/
+ppt/
+*.pkl
+*.csv
+*.ipynb
+**/__pycache__/
+**/*.pyc
+deck/.venv/
+deck/venv/

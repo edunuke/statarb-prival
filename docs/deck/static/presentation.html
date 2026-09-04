@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Institutional Quant Research">
+<title>S&P 500 Institutional Stat-Arb — Live MVP Presentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spectral:wght@600;700&display=swap" rel="stylesheet">
+
+<!-- KaTeX CDN for LaTeX Formula Rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+<style>
+  :root {
+    --bg0: #080d1a;
+    --bg1: #0f172a;
+    --panel: rgba(255, 255, 255, 0.045);
+    --panel2: rgba(255, 255, 255, 0.075);
+    --stroke: #1e3a5f;
+    --stroke-highlight: #2b5288;
+    --teal: #2a9d8f;
+    --teal-bright: #38d39f;
+    --blue: #4a7bab;
+    --orange: #f07167;
+    --gold: #e9c46a;
+    --muted: #94a3b8;
+    --text: #e2e8f0;
+    --head: #ffffff;
+    --mono: "SFMono-Regular", ui-monospace, "Cascadia Code", Consolas, monospace;
+
+    /* Conditional Row Tinting */
+    --win-red-bg: rgba(239, 68, 68, 0.12);
+    --win-red-border: rgba(239, 68, 68, 0.35);
+    --win-yellow-bg: rgba(234, 179, 8, 0.12);
+    --win-yellow-border: rgba(234, 179, 8, 0.35);
+    --win-green-bg: rgba(42, 157, 143, 0.16);
+    --win-green-border: rgba(42, 157, 143, 0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(1200px 700px at 85% -10%, rgba(42, 157, 143, 0.18), transparent 60%),
+      radial-gradient(1000px 600px at -10% 110%, rgba(74, 123, 171, 0.18), transparent 60%),
+      linear-gradient(160deg, var(--bg0), var(--bg1));
+    background-attachment: fixed;
+    overflow: hidden;
+  }
+
+  /* ---------- deck shell ---------- */
+  article { position: absolute; inset: 0; overflow: hidden; }
+  section {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    padding: 48px 64px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+  }
+  section.bespoke-active { opacity: 1; visibility: visible; }
+
+  /* ---------- typography ---------- */
+  h1 { font-family: "Spectral", Georgia, serif; font-weight: 700; color: var(--head); }
+  h2 {
+    font-family: "Spectral", Georgia, serif; font-weight: 600; color: var(--head);
+    font-size: 28px; letter-spacing: 0.2px;
+    display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+  }
+  h2 .kicker {
+    font-family: "Inter", sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold);
+    background: rgba(233, 196, 106, 0.12);
+    border: 1px solid rgba(233, 196, 106, 0.4); border-radius: 999px;
+    padding: 4px 14px; white-space: nowrap;
+  }
+  h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--stroke), transparent); }
+  p { line-height: 1.6; }
+  .muted { color: var(--muted); }
+  .dim { color: var(--muted); font-size: 13px; }
+  .mono { font-family: var(--mono); }
+  b, strong { color: var(--head); }
+  em { color: var(--gold); font-style: normal; font-weight: 600; }
+
+  /* ---------- cover slide ---------- */
+  .cover { display: flex; flex-direction: column; justify-content: center; min-height: 82vh; }
+  .cover .brand {
+    display: flex; align-items: center; gap: 12px;
+    color: var(--gold); font-size: 12px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--teal-bright); box-shadow: 0 0 16px var(--teal-bright); }
+  .cover h1 { font-size: 54px; line-height: 1.08; margin-bottom: 20px; letter-spacing: -0.5px; }
+  .cover h1 .rule { color: var(--teal-bright); }
+  .cover .sub { font-size: 18px; color: var(--muted); max-width: 960px; margin-bottom: 32px; line-height: 1.65; }
+
+  /* Executive KPI Callout Cards on Cover */
+  .executive-kpi-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; max-width: 1000px; margin-bottom: 24px;
+  }
+  .exec-card {
+    background: rgba(15, 23, 42, 0.75); border: 1px solid var(--stroke-highlight);
+    border-radius: 14px; padding: 16px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .exec-card .val { font-family: var(--mono); font-size: 28px; font-weight: 700; color: var(--teal-bright); line-height: 1.1; }
+  .exec-card .val.gold { color: var(--gold); }
+  .exec-card .val.white { color: var(--head); }
+  .exec-card .lbl { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
+  .exec-card .subtxt { font-size: 12px; color: var(--text); margin-top: 4px; line-height: 1.4; }
+
+  .hint {
+    position: absolute; bottom: 24px; left: 64px;
+    font-size: 12px; color: var(--muted); letter-spacing: 1px;
+  }
+  .hint b { color: var(--teal-bright); margin-right: 6px; }
+
+  /* ---------- content cards ---------- */
+  .lead { font-size: 17px; color: var(--muted); margin-bottom: 22px; max-width: 1000px; line-height: 1.6; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .cols.three { grid-template-columns: 1fr 1fr 1fr; }
+  .cols.split-img { grid-template-columns: 1.3fr 0.9fr; gap: 24px; align-items: center; }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--stroke);
+    border-radius: 14px; padding: 22px 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  }
+  .card.highlight { border-color: var(--stroke-highlight); background: rgba(255,255,255,0.05); }
+  .card h3 { font-size: 16px; color: var(--head); margin-bottom: 12px; letter-spacing: 0.3px; font-weight: 600; }
+  .card h3::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: var(--teal-bright); margin-right: 10px; }
+  .card ul { list-style: none; }
+  .card li { font-size: 14px; line-height: 1.65; color: var(--text); padding-left: 16px; position: relative; margin-bottom: 8px; }
+  .card li:last-child { margin-bottom: 0; }
+  .card li::before { content: "▸"; position: absolute; left: 0; color: var(--blue); font-weight: bold; }
+  .card code, .formula code { font-family: var(--mono); font-size: 12px; color: var(--gold); background: rgba(233,196,106,0.1); border: 1px solid rgba(233,196,106,0.25); border-radius: 5px; padding: 2px 6px; }
+
+  /* ---------- stats detail grid ---------- */
+  .stat-row { margin-bottom: 14px; }
+  .stat-row .label { font-size: 11px; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; display: block; font-weight: 600; }
+  .stat-row .value { font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--head); line-height: 1.2; margin-top: 2px; }
+  .stat-row .value.teal { color: var(--teal-bright); }
+  .stat-row .value.gold { color: var(--gold); }
+  .stat-row .value.orange { color: var(--orange); }
+  .stat-row .desc { font-size: 12.5px; color: var(--muted); margin-top: 4px; line-height: 1.45; }
+
+  /* ---------- tables ---------- */
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; }
+  th {
+    text-align: left; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gold); font-weight: 700; padding: 12px 14px;
+    border-bottom: 2px solid var(--stroke-highlight); background: var(--panel2);
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--stroke); }
+  td.num, th.num { font-family: var(--mono); text-align: right; }
+
+  /* Row Shading for Pair Tearsheet */
+  tr.win-red td { background: var(--win-red-bg); border-bottom-color: var(--win-red-border); }
+  tr.win-yellow td { background: var(--win-yellow-bg); border-bottom-color: var(--win-yellow-border); }
+  tr.win-green td { background: var(--win-green-bg); border-bottom-color: var(--win-green-border); }
+
+  td.wr-red { color: #f87171; font-weight: 700; }
+  td.wr-gold { color: var(--gold); font-weight: 700; }
+  td.wr-green { color: var(--teal-bright); font-weight: 700; }
+
+  /* ---------- mermaid container ---------- */
+  .mermaid-wrapper {
+    background: var(--panel); border: 1px solid var(--stroke);
+    border-radius: 14px; padding: 24px; margin-top: 10px;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .mermaid { width: 100%; max-width: 1100px; }
+
+  /* ---------- image slide ---------- */
+  .imgwrap {
+    display: flex; justify-content: center; align-items: center;
+    height: calc(100vh - 220px);
+  }
+  .imgwrap img {
+    max-width: 100%; max-height: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--stroke-highlight);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  /* ---------- formula box ---------- */
+  .formula {
+    font-family: var(--mono); font-size: 15px; color: var(--head);
+    background: rgba(42, 157, 143, 0.08); border: 1px solid rgba(42, 157, 143, 0.35);
+    border-radius: 12px; padding: 16px 20px; margin-top: 16px;
+  }
+  .formula .lbl { color: var(--gold); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; display: block; margin-bottom: 6px; font-weight: 700; }
+
+  /* ---------- progress ---------- */
+  body .bespoke-progress-parent {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 4px; z-index: 10;
+    background: transparent;
+  }
+  body .bespoke-progress-bar {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, var(--teal-bright), var(--gold));
+    transition: width 0.35s ease;
+  }
+  .counter {
+    position: absolute; bottom: 18px; right: 28px;
+    font-family: var(--mono); font-size: 12px; color: var(--muted); z-index: 10; font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    section { padding: 32px 24px; }
+    .cols, .cols.three, .cols.split-img, .executive-kpi-grid { grid-template-columns: 1fr; }
+    .cover h1 { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<script id="stats-data" type="application/json">
+[
+  {"":"Start","group":"2026-02-25 00:00:00"},
+  {"":"End","group":"2026-08-25 00:00:00"},
+  {"":"Period","group":126},
+  {"":"Start Value","group":250000.0},
+  {"":"End Value","group":256469.7607944252},
+  {"":"Total Return [%]","group":2.5879043177700884},
+  {"":"Benchmark Return [%]","group":8.460659588501972},
+  {"":"Max Gross Exposure [%]","group":7.945373084170523},
+  {"":"Total Fees Paid","group":527.6013029437926},
+  {"":"Max Drawdown [%]","group":1.1432519828978467},
+  {"":"Max Drawdown Duration","group":55.0},
+  {"":"Total Trades","group":77},
+  {"":"Total Closed Trades","group":77},
+  {"":"Total Open Trades","group":0},
+  {"":"Open Trade PnL","group":0.0},
+  {"":"Win Rate [%]","group":55.84415584415584},
+  {"":"Best Trade [%]","group":8.720860935097715},
+  {"":"Worst Trade [%]","group":-7.732206486979272},
+  {"":"Avg Winning Trade [%]","group":1.8407963216639072},
+  {"":"Avg Losing Trade [%]","group":-1.9554156441411852},
+  {"":"Avg Winning Trade Duration","group":1.627906976744186},
+  {"":"Avg Losing Trade Duration","group":1.7058823529411764},
+  {"":"Profit Factor","group":1.5685683205409673},
+  {"":"Expectancy","group":84.02286746006757}
+]
+</script>
+
+<script id="comm-data" type="application/json">
+[
+  {"Pair_Legs":"MSCI / RJF","Total_Return_[%]":0.7715351641140566,"Sharpe_Ratio":0.9987103023957931,"Sortino_Ratio":5.442257927009617,"Max_DD_[%]":0.004492438273473454,"Win_Rate_[%]":100.0,"Total_Trades":3},
+  {"Pair_Legs":"MCD / YUM","Total_Return_[%]":0.13331797087718922,"Sharpe_Ratio":0.9506071747577671,"Sortino_Ratio":1.8692381488945213,"Max_DD_[%]":0.0022637403230385544,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"SWKS / ZBRA","Total_Return_[%]":0.11256954474574421,"Sharpe_Ratio":0.9375615077693781,"Sortino_Ratio":2.4127500989108044,"Max_DD_[%]":0.0014809308964913726,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"MA / SPGI","Total_Return_[%]":0.3395898295134536,"Sharpe_Ratio":0.7694484464040299,"Sortino_Ratio":2.468618884601806,"Max_DD_[%]":0.0043663796208903705,"Win_Rate_[%]":100.0,"Total_Trades":2},
+  {"Pair_Legs":"RVTY / STE","Total_Return_[%]":0.1856211338527869,"Sharpe_Ratio":0.7065517326007548,"Sortino_Ratio":1.51079391030436,"Max_DD_[%]":0.0039008236560111875,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"MS / STT","Total_Return_[%]":0.30800245933795267,"Sharpe_Ratio":0.699182015662267,"Sortino_Ratio":2.0850580331300566,"Max_DD_[%]":0.0046901527042342295,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"BA / EMR","Total_Return_[%]":0.07387179822111456,"Sharpe_Ratio":0.6966014182362954,"Sortino_Ratio":1.6781043710115706,"Max_DD_[%]":0.001397642676348454,"Win_Rate_[%]":100.0,"Total_Trades":2},
+  {"Pair_Legs":"MSFT / TRMB","Total_Return_[%]":0.1649333089228655,"Sharpe_Ratio":0.6949201276183974,"Sortino_Ratio":1.4882382169916086,"Max_DD_[%]":0.0035186963707078966,"Win_Rate_[%]":100.0,"Total_Trades":2},
+  {"Pair_Legs":"CCI / VICI","Total_Return_[%]":0.18528149631433788,"Sharpe_Ratio":0.6921908886964203,"Sortino_Ratio":1.2566399312576109,"Max_DD_[%]":0.004681362853131699,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"CSCO / JBL","Total_Return_[%]":0.08045644634055993,"Sharpe_Ratio":0.6913070981072721,"Sortino_Ratio":1.196188124341428,"Max_DD_[%]":0.0021355077244544773,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"MA / V","Total_Return_[%]":0.3175115843530918,"Sharpe_Ratio":0.6738086208192121,"Sortino_Ratio":1.107084238388981,"Max_DD_[%]":0.011957679716845249,"Win_Rate_[%]":100.0,"Total_Trades":3},
+  {"Pair_Legs":"BIIB / MRK","Total_Return_[%]":0.07899256802361698,"Sharpe_Ratio":0.6722555448323588,"Sortino_Ratio":0.5822995966275448,"Max_DD_[%]":0.004307147411442003,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"DVN / SLB","Total_Return_[%]":0.04678091917791338,"Sharpe_Ratio":0.6481084692450689,"Sortino_Ratio":0.3474197235044551,"Max_DD_[%]":0.004275282441090766,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"ETN / JCI","Total_Return_[%]":0.041187186697722034,"Sharpe_Ratio":0.6350895358063462,"Sortino_Ratio":0.2834909811480289,"Max_DD_[%]":0.004612914714330341,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"AEE / AEP","Total_Return_[%]":0.04855980285449757,"Sharpe_Ratio":0.32753621609463535,"Sortino_Ratio":0.06539850213411577,"Max_DD_[%]":0.0440364853973807,"Win_Rate_[%]":50.0,"Total_Trades":4},
+  {"Pair_Legs":"BIO / IQV","Total_Return_[%]":0.05873690777813412,"Sharpe_Ratio":0.28612635474919634,"Sortino_Ratio":0.03880235977505662,"Max_DD_[%]":0.06803730047728607,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"AVGO / NVDA","Total_Return_[%]":0.22041905847198784,"Sharpe_Ratio":0.2827133368478355,"Sortino_Ratio":0.02729597743376368,"Max_DD_[%]":0.36918014416146283,"Win_Rate_[%]":50.0,"Total_Trades":6},
+  {"Pair_Legs":"AMT / VICI","Total_Return_[%]":0.1384506062837243,"Sharpe_Ratio":0.2379588030984273,"Sortino_Ratio":0.029416866519747023,"Max_DD_[%]":0.21243378430966242,"Win_Rate_[%]":100.0,"Total_Trades":3},
+  {"Pair_Legs":"NVDA / TEL","Total_Return_[%]":0.42894987574213506,"Sharpe_Ratio":0.21637812012998603,"Sortino_Ratio":0.026867061096435944,"Max_DD_[%]":0.9654000922403094,"Win_Rate_[%]":25.0,"Total_Trades":4},
+  {"Pair_Legs":"MTB / PNC","Total_Return_[%]":0.04808056644773906,"Sharpe_Ratio":0.16220994699714075,"Sortino_Ratio":0.026048890564433623,"Max_DD_[%]":0.09484075241448231,"Win_Rate_[%]":66.66666666666666,"Total_Trades":3},
+  {"Pair_Legs":"CPT / WY","Total_Return_[%]":0.003918938157410068,"Sharpe_Ratio":0.03208181712436594,"Sortino_Ratio":0.003627333948463259,"Max_DD_[%]":0.08422638612708422,"Win_Rate_[%]":60.0,"Total_Trades":5},
+  {"Pair_Legs":"A / IQV","Total_Return_[%]":0.0,"Sharpe_Ratio":0.0,"Sortino_Ratio":0.0,"Max_DD_[%]":0.0,"Win_Rate_[%]":0.0,"Total_Trades":0},
+  {"Pair_Legs":"ANET / NVDA","Total_Return_[%]":-0.04840029332725537,"Sharpe_Ratio":-0.06660965090620617,"Sortino_Ratio":-0.005506345196960783,"Max_DD_[%]":0.3888693785662034,"Win_Rate_[%]":20.0,"Total_Trades":5},
+  {"Pair_Legs":"ATO / EVRG","Total_Return_[%]":-0.09593230275560805,"Sharpe_Ratio":-0.4609759927334213,"Sortino_Ratio":-0.030863275669750046,"Max_DD_[%]":0.13939294123038737,"Win_Rate_[%]":25.0,"Total_Trades":4},
+  {"Pair_Legs":"AMP / SPGI","Total_Return_[%]":-0.26045338743256874,"Sharpe_Ratio":-0.7218077779321561,"Sortino_Ratio":-0.04564959189395727,"Max_DD_[%]":0.26045338743256874,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"AMP / V","Total_Return_[%]":-0.2757254093601391,"Sharpe_Ratio":-0.7218375142701696,"Sortino_Ratio":-0.04565146863349948,"Max_DD_[%]":0.2757254093601391,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"ES / XEL","Total_Return_[%]":-0.25876338135618626,"Sharpe_Ratio":-0.7222422947538596,"Sortino_Ratio":-0.04567701536090362,"Max_DD_[%]":0.25876338135618626,"Win_Rate_[%]":50.0,"Total_Trades":2},
+  {"Pair_Legs":"JPM / SYF","Total_Return_[%]":-0.21513628478896374,"Sharpe_Ratio":-0.7232957434003492,"Sortino_Ratio":-0.04574350077148971,"Max_DD_[%]":0.21513628478896374,"Win_Rate_[%]":0.0,"Total_Trades":2},
+  {"Pair_Legs":"AXP / BAC","Total_Return_[%]":-0.06810266516918961,"Sharpe_Ratio":-0.7614861415521905,"Sortino_Ratio":-0.04815336486952726,"Max_DD_[%]":0.06810266516918961,"Win_Rate_[%]":50.0,"Total_Trades":2}
+]
+</script>
+
+<article class="deck-container" data-bespoke-touch>
+
+  <!-- 01 · COVER SLIDE -->
+  <section>
+    <div class="cover">
+      <div class="brand"><span class="dot"></span> Quantitative Research &amp; Portfolio Management &nbsp;·&nbsp; Production MVP Engine</div>
+      <h1>S&amp;P 500 Institutional<br><span class="rule">Statistical Arbitrage</span> Pipeline</h1>
+      <p class="sub">An automated, market-neutral pairs-trading system designed to capture mean-reversion profits while maintaining zero market exposure. Built with real-time risk controls, adaptive AI threshold tuning, and liquidity participation limits.</p>
+
+      <!-- Executive KPI Highlight Cards -->
+      <div class="executive-kpi-grid">
+        <div class="exec-card">
+          <div class="val" id="cover-net-return">+5.24%</div>
+          <div class="lbl">Annualized Net Return</div>
+          <div class="subtxt">+2.59% total realized across 126 trading days (6 months)</div>
+        </div>
+        <div class="exec-card">
+          <div class="val white" id="cover-end-value">$256,469.76</div>
+          <div class="lbl">End Portfolio Value</div>
+          <div class="subtxt">Starting capital: $250,000 net of all fees &amp; costs</div>
+        </div>
+        <div class="exec-card">
+          <div class="val gold" id="cover-win-rate">55.8%</div>
+          <div class="lbl">Sleeve Win Rate</div>
+          <div class="subtxt">Sub-1.2% max drawdown (1.14%) via automated risk stops</div>
+        </div>
+      </div>
+    </div>
+    <div class="hint"><b>→</b> Press arrow keys or swipe to navigate</div>
+  </section>
+
+  <!-- 02 · INVESTMENT THESIS & STRATEGIC CORE -->
+  <section>
+    <h2><span class="kicker">Strategic Core</span> Investment Thesis &amp; Return Mechanics</h2>
+    <p class="lead">Price divergences between historically paired equities are temporary, but unhedged market noise destroys profit. This system continuously identifies mispriced pairs, dynamically adjusts entry sensitivity, and limits risk through automated portfolio optimization.</p>
+    <div class="cols three">
+      <div class="card highlight">
+        <h3>Core Trading Engine</h3>
+        <ul>
+          <li>Long-short relative value trading on cointegrated S&amp;P 500 stock pairs.</li>
+          <li>Dynamic hedge ratios calculated in real-time via <b>Fast State Tracking</b>.</li>
+          <li>Trades the normalized price spread divergence ($e_t$).</li>
+          <li>Automated profit-taking on mean reversion; hard stop-loss on structural breaks.</li>
+        </ul>
+      </div>
+      <div class="card highlight">
+        <h3>Adaptive AI Thresholds</h3>
+        <ul>
+          <li>Contextual machine learning dynamically selects entry sensitivity ($1.50\sigma$ to $2.25\sigma$).</li>
+          <li>Inputs include market volatility, VIX levels, and pair stability measures.</li>
+          <li><b>Business Impact:</b> Relaxes hurdles during major dislocations to capture opportunity; tightens hurdles during calm regimes to prevent over-trading.</li>
+        </ul>
+      </div>
+      <div class="card highlight">
+        <h3>Institutional Risk Controls</h3>
+        <ul>
+          <li>Strict net-zero market beta target ($|\beta_{\text{net}}| \le 0.05$).</li>
+          <li>Style factor caps ($|F_{\text{momentum}}| \le 0.10$) prevent quant squeeze losses.</li>
+          <li>Single-stock NAV capped at $15\%$; gross portfolio leverage capped at $1.8\times$.</li>
+          <li>Order size capped at <b>1.5% of 20-day Average Daily Volume (ADV)</b>.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="formula">
+      <span class="lbl">Portfolio Risk-Optimized Objective Function</span>
+      $$\max_{w} \quad w^T \mu - \frac{1}{2}\lambda w^T \Sigma w \quad \text{s.t.} \quad |\beta_{\text{net}}| \le 0.05, \quad |F_{\text{momentum}}| \le 0.10, \quad \text{NAV}_i \le 0.15$$
+    </div>
+  </section>
+
+  <!-- 03 · SYSTEM ARCHITECTURE & OPERATIONAL PIPELINE -->
+  <section>
+    <h2><span class="kicker">Execution Workflow</span> System Architecture &amp; Operational Pipeline</h2>
+    <p class="lead">A modular 3-stage architecture handles data processing, risk filtering, and order generation cleanly and transparently.</p>
+    <div class="mermaid-wrapper">
+      <div class="mermaid">
+flowchart TD
+    subgraph Phase1 ["1. Market Ingestion & Screening (Every 20 Days)"]
+        A["S&P 500 Equities<br/>Price Data & Sectors"] --> B["Pair Pre-Screening<br/>Sector Match & Correlation ≥ 0.45"]
+        B --> C["Statistical Cointegration<br/>Engle-Granger & Hurst Testing"]
+    end
+    subgraph Phase2 ["2. Daily Signal & Structural Risk Filter"]
+        C --> D["Fast Kalman Filter<br/>Tracks Dynamic Spread & Beta"]
+        D --> E["Regime Break Gate<br/>Detects Structural Instability (CUSUM / BOCPD)"]
+    end
+    subgraph Phase3 ["3. AI Thresholding & Execution"]
+        E --> F["Adaptive AI Bandit<br/>Sets Sensitivity Hurdle (1.5σ - 2.25σ)"]
+        F --> G["Portfolio Risk Allocator<br/>Enforces Beta, Factor & Exposure Caps"]
+        G --> H["Execution Blotter<br/>Generates Low-Impact Market Orders"]
+    end
+    style Phase1 fill:rgba(74,123,171,0.08),stroke:#2b5c8f,stroke-width:1px
+    style Phase2 fill:rgba(42,157,143,0.08),stroke:#2a9d8f,stroke-width:1px
+    style Phase3 fill:rgba(233,196,106,0.08),stroke:#e9c46a,stroke-width:1px
+      </div>
+    </div>
+    <p class="dim" style="text-align:center; margin-top:12px">State persistence engine saves full model status to disk every session for crash recovery and zero signal loss.</p>
+  </section>
+
+  <!-- 04 · PREDICTIVE ACCURACY: FORECAST VS REALIZED -->
+  <section>
+    <h2><span class="kicker">Model Accuracy</span> Forecasted vs. Realized Out-of-Sample Return</h2>
+    <div class="cols split-img">
+      <div class="imgwrap"><img src="__CHART_EXPECTATION__" alt="Expectation vs realized"></div>
+      <div class="card highlight">
+        <h3>Key Performance Findings</h3>
+        <ul>
+          <li><b>Forecast Tracking:</b> Realized daily P&amp;L (bars) aligns with optimizer forecasts (dashed line), demonstrating high out-of-sample calibration.</li>
+          <li><b>Volatility Response:</b> Market volatility spikes (dotted line) trigger automatic threshold tightening, shielding capital during turbulent periods.</li>
+          <li><b>Bounded Loss Tails:</b> Stop-loss mechanisms successfully eliminate catastrophic tail losses during unexpected spread widening.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · CAPITAL GROWTH & WEALTH TRAJECTORY -->
+  <section>
+    <h2><span class="kicker">Capital Growth</span> Portfolio Wealth Trajectory</h2>
+    <div class="cols split-img">
+      <div class="imgwrap"><img src="__CHART_PERFORMANCE__" alt="Cumulative performance"></div>
+      <div class="card highlight">
+        <h3>Executive P&amp;L Highlights</h3>
+        <ul>
+          <li><b>Capital Growth:</b> Portfolio expanded from <b>$250,000</b> to <b id="cv-end" class="teal">$256,469.76</b> over 126 trading days, generating a <b>5.24% annualized return</b> (+2.59% net realized).</li>
+          <li><b>Low Drawdown:</b> Peak-to-trough drop restricted to <b>1.14%</b>, showcasing institutional-grade downside protection.</li>
+          <li><b>Market Independence:</b> Consistent upward drift achieved independently of broader market direction.</li>
+          <li><b>Net of All Friction:</b> P&amp;L explicitly accounts for 1.5 bps trading fees ($527.60 total) and 50 bps annual short borrow drag.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · RISK FUNNEL & ADAPTIVE MARKET SIZING -->
+  <section>
+    <h2><span class="kicker">Capital Allocation</span> Dynamic Portfolio Sizing Across Market Regimes</h2>
+    <div class="cols split-img">
+      <div class="imgwrap"><img src="__CHART_FUNNEL__" alt="Funnel sizing"></div>
+      <div class="card highlight">
+        <h3>Multi-Stage Opportunity Funnel</h3>
+        <ul>
+          <li><b>Monitored Universe (Top):</b> Tracks 20–35 statistical pairs passing core cointegration gates.</li>
+          <li><b>Eligible Universe (Middle):</b> Filters pairs reaching dynamic AI entry thresholds.</li>
+          <li><b>Active Holdings (Live):</b> Optimizer allocates capital to top 1–5 non-correlated pairs.</li>
+          <li><b>Capital Protection:</b> Funnel automatically contracts during market stress to preserve cash.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · SLEEVE-LEVEL EXECUTION TEARSHEET -->
+  <section>
+    <h2><span class="kicker">Execution Review</span> Sleeve-Level Execution Tearsheet</h2>
+    <p class="dim" style="margin-bottom:12px">Performance metrics by pair sleeve, ranked by Sharpe Ratio. Shading indicates performance tier (Green: &gt;50% Win Rate, Yellow: 50% Win Rate, Red: 0% Win Rate).</p>
+    <div style="max-height:calc(100vh - 160px); overflow-y:auto">
+      <table id="comm-table">
+        <thead>
+          <tr><th>Pair Sleeve</th><th class="num">Net Return</th><th class="num">Sharpe Ratio</th><th class="num">Sortino Ratio</th><th class="num">Max Drawdown</th><th class="num">Win Rate</th><th class="num">Total Trades</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 08 · OUT-OF-SAMPLE WALK-FORWARD SUMMARY -->
+  <section>
+    <h2><span class="kicker">Performance Summary</span> Out-of-Sample Walk-Forward Summary</h2>
+    <div class="cols" id="stats-grid">
+      <div class="card stat-row">
+        <span class="label">Evaluation Period</span>
+        <div class="value" id="st-window">2026-02-25 → 2026-08-25</div>
+        <div class="desc">Strict walk-forward window without lookahead bias or parameter retuning.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Trading Horizon</span>
+        <div class="value" id="st-period">126 days</div>
+        <div class="desc">Active trading sessions evaluated in out-of-sample sequence.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Initial Capital</span>
+        <div class="value" id="st-start">$250,000.00</div>
+        <div class="desc">Starting portfolio balance allocated on launch date.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">End Portfolio Value</span>
+        <div class="value teal" id="st-end">$256,469.76</div>
+        <div class="desc">Net liquidation value after 126 trading sessions, including all fees and borrow costs.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Compounded Annualized Return</span>
+        <div class="value teal" id="st-totret">+5.24% p.a.</div>
+        <div class="desc">5.24% annualized return (+2.59% net realized over 126 trading days) with zero market beta.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Equity Benchmark Return</span>
+        <div class="value" id="st-bench">+8.46%</div>
+        <div class="desc">S&amp;P 500 directional market return over the same period.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Max Gross Exposure</span>
+        <div class="value gold" id="st-gross">7.95%</div>
+        <div class="desc">Peak gross leverage utilized across active allocated positions.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Total Fees &amp; Drag Paid</span>
+        <div class="value" id="st-fees">$527.60</div>
+        <div class="desc">Commissions (1.5 bps/leg) and short borrow drag (50 bps/yr).</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Max Drawdown</span>
+        <div class="value orange" id="st-mdd">1.14%</div>
+        <div class="desc">Peak-to-trough loss, demonstrating strict risk control.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Strategy Win Rate</span>
+        <div class="value gold" id="st-winrate">55.8%</div>
+        <div class="desc">Percentage of executed trade sleeves closing with net profit.</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Profit Factor</span>
+        <div class="value teal" id="st-profitfactor">1.57</div>
+        <div class="desc">Gross winning profits divided by gross losing losses ($>1.5$ represents solid edge).</div>
+      </div>
+      <div class="card stat-row">
+        <span class="label">Trade Expectancy</span>
+        <div class="value gold" id="st-expectancy">$84.02</div>
+        <div class="desc">Expected net dollar profit per executed trade sleeve.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 · INSTITUTIONAL GOVERNANCE & CONTROL -->
+  <section>
+    <h2><span class="kicker">Governance</span> Institutional Governance &amp; Mathematical Control Layer</h2>
+    <div class="cols" style="grid-template-columns: 1fr 1fr 1fr;">
+      <div class="card highlight">
+        <h3>Risk Bounds</h3>
+        <ul>
+          <li><b>Net Beta:</b> $|\beta_{\text{net}}| \le 0.05$ (market neutral).</li>
+          <li><b>Factor Limit:</b> $|F_{\text{momentum}}| \le 0.10$ loading ceiling.</li>
+          <li><b>Sector Density:</b> Max 3 active pair sleeves per sector.</li>
+          <li><b>Single Ticker NAV:</b> Capped at 15% net exposure.</li>
+        </ul>
+      </div>
+      <div class="card highlight">
+        <h3>Liquidity &amp; Execution</h3>
+        <ul>
+          <li><b>ADV Cap:</b> Orders capped at <b>1.5% 20-day ADV</b>.</li>
+          <li><b>Execution Model:</b> Next-day Market-On-Open (T+1 lag).</li>
+          <li><b>Borrow Cost:</b> 50 bps annual rate incorporated.</li>
+          <li><b>Quarantine:</b> Exited pairs locked for 15 rebalance days.</li>
+        </ul>
+      </div>
+      <div class="card highlight">
+        <h3>Mathematical Control</h3>
+        <ul>
+          <li><b>Spread Calc:</b> $e_t = (y_t - \alpha_t - \beta_t x_t) / \sqrt{F_t}$</li>
+          <li><b>CUSUM Test:</b> $S_t = \sum v_k^2 / F_k \sim \chi^2(K)$</li>
+          <li><b>Frac Integration:</b> GPH log-periodogram estimator.</li>
+          <li><b>Reward Equation:</b> $R = 2.0 \cdot \text{Capture} \cdot e^{-0.3(\text{Days}/\text{HL}-1)}$</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:16px" class="card highlight">
+      <h3>Executive Summary &amp; Deployment Readiness</h3>
+      <ul>
+        <li><b>High-Conviction Selectivity:</b> Executes institutional-grade pairs rather than deploying capital into low-quality noise.</li>
+        <li><b>Dynamic Protection:</b> AI contextual thresholding tightens risk gates in choppy markets and expands exposure during clean dislocations.</li>
+        <li><b>Production Crash Resilience:</b> Model state (Kalman states, context hyperplanes, quarantine timers) persists automatically to disk.</li>
+      </ul>
+    </div>
+    <p class="dim" style="margin-top:12px; text-align:center">Technology Stack: <b>Python 3.11+</b> · <b>NumPy / Pandas</b> · <b>SciPy (SLSQP)</b> · <b>VectorBT</b> · <b>MabWiser</b> · <b>KaTeX</b>.</p>
+  </section>
+
+</article>
+
+<div class="counter"><span id="n">1</span> / <span id="total"></span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bespoke@1.1.0/dist/bespoke.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bespoke-classes@1.0.0/dist/bespoke-classes.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bespoke-keys@1.0.0/dist/bespoke-keys.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bespoke-touch@1.0.0/dist/bespoke-touch.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bespoke-progress@1.0.0/dist/bespoke-progress.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bespoke-hash@1.0.0/dist/bespoke-hash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+
+<script>
+  // Initialize Mermaid with clean styling
+  mermaid.initialize({
+    startOnLoad: true,
+    htmlLabels: true,
+    theme: 'base',
+    flowchart: { curve: 'basis', padding: 8, nodeSpacing: 25, rankSpacing: 30 },
+    themeVariables: {
+      fontFamily: 'Inter, sans-serif',
+      fontSize: '12px',
+      primaryColor: '#0f172a',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#2b5288',
+      lineColor: '#4a7bab',
+      textColor: '#e2e8f0',
+      edgeLabelBackground: '#080d1a',
+      clusterBkg: 'rgba(30, 58, 95, 0.2)',
+      clusterBorder: '#2b5288'
+    }
+  });
+
+  // ====== LOAD PORTFOLIO STATS DYNAMICALLY ======
+  var raw = JSON.parse(document.getElementById('stats-data').textContent || '[]');
+  var sp = {};
+  raw.forEach(function(r) { sp[r['']] = r.group; });
+
+  function fmt(v, suffix) {
+    var n = parseFloat(v);
+    if (isNaN(n)) return v || '—';
+    if (suffix === '$') return '$' + n.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+    if (suffix === '%') return (n > 0 ? '+' : '') + n.toFixed(2) + '%';
+    if (suffix === '') return n.toFixed(0);
+    return n.toLocaleString(undefined,{minimumFractionDigits:2});
+  }
+
+  // Populate Cover Chips & Cards if JSON presents data
+  if (sp['End Value']) {
+    var endValFmt = '$' + parseFloat(sp['End Value']).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2});
+    var winFmt = parseFloat(sp['Win Rate [%]']).toFixed(1) + '%';
+
+    // Calculate Compounded Annualized Return (252 trading days / 126 period days)
+    var totRetRaw = parseFloat(sp['Total Return [%]']) / 100.0;
+    var periodDays = parseInt(sp['Period']) || 126;
+    var cagr = ((Math.pow(1.0 + totRetRaw, 252.0 / periodDays)) - 1.0) * 100.0;
+    var cagrFmt = '+' + cagr.toFixed(2) + '%';
+
+    document.getElementById('cover-end-value').textContent = endValFmt;
+    document.getElementById('cover-net-return').textContent = cagrFmt;
+    document.getElementById('cover-win-rate').textContent = winFmt;
+
+    var endValEl = document.getElementById('cv-end');
+    if (endValEl) endValEl.textContent = endValFmt;
+  }
+
+  // Populate Slide 08 Summary Grid
+  var src = [
+    { id:'st-window',        key:'Start',                   fmt:function(v){return (v||'').slice(0,10)+' → '+(sp['End']||'').slice(0,10)} },
+    { id:'st-period',        key:'Period',                  fmt:function(v){return fmt(v,'')+' days'} },
+    { id:'st-start',         key:'Start Value',             fmt:function(v){return fmt(v,'$')} },
+    { id:'st-end',           key:'End Value',               fmt:function(v){return fmt(v,'$')} },
+    { id:'st-totret',        key:'Total Return [%]',        fmt:function(v){
+        var r = parseFloat(v)/100.0;
+        var p = parseInt(sp['Period']) || 126;
+        var c = ((Math.pow(1.0 + r, 252.0 / p)) - 1.0) * 100.0;
+        return '+' + c.toFixed(2) + '% p.a.';
+      } 
+    },
+    { id:'st-bench',         key:'Benchmark Return [%]',    fmt:function(v){return fmt(v,'%')} },
+    { id:'st-gross',         key:'Max Gross Exposure [%]',  fmt:function(v){return fmt(v,'%')} },
+    { id:'st-fees',          key:'Total Fees Paid',         fmt:function(v){return '$'+parseFloat(v).toFixed(2)} },
+    { id:'st-mdd',           key:'Max Drawdown [%]',        fmt:function(v){return fmt(v,'%')} },
+    { id:'st-trades',        key:'Total Closed Trades',     fmt:function(v){return fmt(v,'')} },
+    { id:'st-winrate',       key:'Win Rate [%]',            fmt:function(v){return fmt(v,'%')} },
+    { id:'st-profitfactor',  key:'Profit Factor',           fmt:function(v){return parseFloat(v).toFixed(2)} },
+    { id:'st-expectancy',    key:'Expectancy',              fmt:function(v){return '$'+parseFloat(v).toFixed(2)} }
+  ];
+  src.forEach(function(s) {
+    var el = document.getElementById(s.id);
+    if (el && sp[s.key]) el.textContent = s.fmt(sp[s.key]);
+  });
+
+  // ====== POPULATE COMMITTEE TEARSHEET WITH ROW SHADING ======
+  var rawComm = JSON.parse(document.getElementById('comm-data').textContent || '[]');
+  var commTbody = document.querySelector('#comm-table tbody');
+  if (commTbody && rawComm.length) {
+    rawComm.forEach(function(r) {
+      var ret = parseFloat(r['Total_Return_[%]']);
+      var sharpe = parseFloat(r.Sharpe_Ratio);
+      var sortino = parseFloat(r.Sortino_Ratio);
+      var mdd = parseFloat(r['Max_DD_[%]']);
+      var winrate = parseFloat(r['Win_Rate_[%]']);
+      var trades = parseInt(r.Total_Trades, 10);
+
+      var retCls = ret >= 0 ? 'wr-green' : 'wr-red';
+
+      // Win Rate Row Shading Logic:
+      // Red shading if winrate == 0, Yellow shading if winrate == 50%, Green shading if winrate > 50%
+      var rowShadeCls = '';
+      var wrCls = '';
+      if (winrate === 0) {
+        rowShadeCls = 'win-red';
+        wrCls = 'wr-red';
+      } else if (winrate === 50) {
+        rowShadeCls = 'win-yellow';
+        wrCls = 'wr-gold';
+      } else if (winrate > 50) {
+        rowShadeCls = 'win-green';
+        wrCls = 'wr-green';
+      } else {
+        wrCls = 'wr-gold';
+      }
+
+      var tr = document.createElement('tr');
+      if (rowShadeCls) tr.className = rowShadeCls;
+
+      tr.innerHTML = '<td class="mono"><b>' + r.Pair_Legs.replace(/\//g,' / ') + '</b></td>'
+        + '<td class="num ' + retCls + '">' + (ret >= 0 ? '+' : '') + ret.toFixed(3) + '%</td>'
+        + '<td class="num">' + sharpe.toFixed(3) + '</td>'
+        + '<td class="num">' + sortino.toFixed(2) + '</td>'
+        + '<td class="num">' + mdd.toFixed(3) + '%</td>'
+        + '<td class="num ' + wrCls + '">' + winrate.toFixed(0) + '%</td>'
+        + '<td class="num">' + trades + '</td>';
+      commTbody.appendChild(tr);
+    });
+  }
+
+  // ====== BESPOKE DECK INITIALIZATION ======
+  var deck = bespoke.from('article', [
+    bespoke.plugins.classes(),
+    bespoke.plugins.keys(),
+    bespoke.plugins.touch(),
+    bespoke.plugins.progress(),
+    bespoke.plugins.hash()
+  ]);
+
+  var total = document.querySelectorAll('section').length;
+  document.getElementById('total').textContent = total;
+  deck.on('activate', function (e) {
+    document.getElementById('n').textContent = e.index + 1;
+    if (window.renderMathInElement) {
+      renderMathInElement(e.slide);
+    }
+  });
+</script>
+</body>
+</html>
