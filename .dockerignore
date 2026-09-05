@@ -8,3 +8,4 @@
 *.csv
 *.ipynb
 **/lightning_logs/
+.kilo

@@ -1,4 +1,4 @@
-# Build context: dev/  (run: docker build -f docs/deck/Dockerfile -t statarb-deck .)
+# Build context: repo root (see docs/docker-compose.yml; run via `docker compose up --build`).
 FROM python:3.11-slim
 
 WORKDIR /app

@@ -1,0 +1,10 @@
+services:
+  statarb-deck:
+    build:
+      context: ..
+      dockerfile: docs/deck/Dockerfile
+    image: statarb-deck
+    container_name: statarb-deck
+    ports:
+      - "8080:8000"
+    restart: unless-stopped

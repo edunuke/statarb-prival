@@ -17,6 +17,7 @@ docs/
     ├── requirements.txt
     ├── Dockerfile
     └── README.md
+docker-compose.yml           # Compose file: build + run the deck service
 ```
 
 The deck HTML is a single file: Bespoke.js and Mermaid are loaded from
@@ -34,17 +35,21 @@ uvicorn deck.main:app --port 8000
 Open http://localhost:8000 — navigate with arrow keys / swipe. The progress
 bar and slide counter are built in.
 
-## Run with Docker
+## Run with Docker Compose
 
-Build from the `docs/` directory (so the image can pick up `imgs/results.png`):
+Build and start the deck server with a single command (run from the repo root or
+from `docs/` — the compose file sets the repo root as the build context so the
+image picks up `results/7/` chart PNGs):
 
 ```
-cd dev/docs
-docker build -f deck/Dockerfile -t statarb-deck .
-docker run --rm -p 8080:8000 statarb-deck
+# from docs/
+docker compose up --build -d
 ```
 
-Open http://localhost:8080
+Open http://localhost:8080. The container publishes port 8080, restarts
+automatically, and serves the deck on `/` with a `/health` liveness probe.
+
+Stop and remove the container with `docker compose down`.
 
 ## Endpoints
 
