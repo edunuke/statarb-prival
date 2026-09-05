@@ -416,9 +416,6 @@
       <li class="nav-item"><a class="nav-link" href="#sec-summary"><span class="idx-num">11</span>Out-of-Sample Summary</a></li>
       <li class="nav-item"><a class="nav-link" href="#sec-governance"><span class="idx-num">12</span>Governance &amp; Controls</a></li>
       <li class="nav-item"><a class="nav-link" href="#sec-deployment"><span class="idx-num">13</span>Live Deployment</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-faq-moo"><span class="idx-num">14</span>FAQ · Passive Limits</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-faq-sector"><span class="idx-num">15</span>FAQ · Sector Neutrality</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-faq-stops"><span class="idx-num">16</span>FAQ · Stop-Loss</a></li>
     </ul>
     <div class="index-foot"><span>Report</span><span>2025 → 2026</span></div>
   </div>
@@ -1621,113 +1618,7 @@ flowchart TD
     </div>
   </section>
 
-  <!-- 12 · FAQ: PASSIVE LIMIT ORDERS -->
-  <section id="sec-faq-moo" class="page-section">
-    <h2><span class="kicker">FAQ · One</span> Should We Switch to Passive Limit Orders?</h2>
-    <div class="deck-body">
-      <div class="faq-grid">
-        <div class="faq-card perf">
-          <span class="faq-tag">Performance</span>
-          <h3>Backtest better, live worse</h3>
-          <ul>
-            <li>Mathematically improves the <em>backtest</em> by erasing the <b>$4,280.54</b> fee drag today.</li>
-            <li>But it will likely <b>degrade live performance</b> through <b>adverse selection</b>.</li>
-          </ul>
-        </div>
-        <div class="faq-card risk">
-          <span class="faq-tag">Risk Profile</span>
-          <h3>Higher execution risk</h3>
-          <ul>
-            <li>Stat-arb captures <b>rapid mean-reversion</b> — if you post a passive limit, you only fill when the spread moves <em>against</em> you.</li>
-            <li>On the best trades (snap-back in minutes), your resting order is <b>left unfilled</b> — you miss exactly the alpha the model was built to capture.</li>
-          </ul>
-        </div>
-        <div class="faq-card verdict">
-          <span class="faq-tag">Verdict</span>
-          <h3>Keep MOO aggressive execution</h3>
-          <ul>
-            <li>Paying <b>1.5–3.0 bps</b> to guarantee you capture the divergence (and the structural-break exit) is a <em>necessary cost of doing business</em> in fast mean-reversion.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="faq-bottomline">
-        <span class="bl-tag">Bottom Line</span>
-        <p>Execution aggressiveness is not the fee line to optimize. The 1.5 bps MOO fill is what guarantees the edge is actually captured in live markets.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 13 · FAQ: SECTOR DOLLAR-NEUTRALITY -->
-  <section id="sec-faq-sector" class="page-section">
-    <h2><span class="kicker">FAQ · Two</span> Should We Force Strict Sector Dollar-Neutrality?</h2>
-    <div class="deck-body">
-      <div class="faq-grid">
-        <div class="faq-card perf">
-          <span class="faq-tag">Performance</span>
-          <h3>Decreases absolute returns</h3>
-          <ul>
-            <li>Adding the hard equality constraint \(\sum W_{\text{long, sector}} + \sum W_{\text{short, sector}} = 0\) <b>shrinks the feasible set</b> of the SLSQP optimizer.</li>
-            <li>The engine is forced to <b>reject profitable cointegrated pairs</b> simply because no offsetting pair exists to balance sector dollars.</li>
-          </ul>
-        </div>
-        <div class="faq-card risk">
-          <span class="faq-tag">Risk Profile</span>
-          <h3>Significantly improves risk</h3>
-          <ul>
-            <li>Mathematically eliminates the threat of a <b>macro-driven sector rotation</b> (e.g., a regional banking crisis) blowing up a beta-neutral but dollar-imbalanced book.</li>
-          </ul>
-        </div>
-        <div class="faq-card verdict">
-          <span class="faq-tag">Verdict</span>
-          <h3>Only at 3x+ leverage</h3>
-          <ul>
-            <li>Implement only if you intend to run <b>high portfolio leverage (3x+)</b>, where surviving sector tail-risk matters more than raw unlevered yield.</li>
-            <li>Below that, the return sacrifice is not worth the protection.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="faq-bottomline">
-        <span class="bl-tag">Bottom Line</span>
-        <p>Sector dollar-neutrality is a leverage-enabler, not a return-enhancer. Unlevered, it only costs yield.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 14 · FAQ: TRAILING Z-SCORE STOPS -->
-  <section id="sec-faq-stops" class="page-section">
-    <h2><span class="kicker">FAQ · Three</span> Should We Add Trailing Z-Score Stops?</h2>
-    <div class="deck-body">
-      <div class="faq-grid">
-        <div class="faq-card perf">
-          <span class="faq-tag">Performance</span>
-          <h3>Higher turnover, shorter holds</h3>
-          <ul>
-            <li>Decreases <b>average holding time</b>, which increases <b>turnover and execution fees</b>.</li>
-            <li>You avoid full \(-2.75\sigma\) stop-outs, but get <b>prematurely chopped out</b> of trades that hit normal noise before fully reverting.</li>
-          </ul>
-        </div>
-        <div class="faq-card risk">
-          <span class="faq-tag">Risk Profile</span>
-          <h3>Improves downside volatility</h3>
-          <ul>
-            <li>Cutting the position the moment reversion momentum stalls <b>limits exposure to structural breaks</b> the BOCPD engine hasn't flagged yet.</li>
-          </ul>
-        </div>
-        <div class="faq-card verdict">
-          <span class="faq-tag">Verdict</span>
-          <h3>Worth testing — carefully</h3>
-          <ul>
-            <li>Requires careful tuning so the trailing buffer isn't so tight it generates <b>excessive churn and fee drag</b>.</li>
-            <li>Gate twice: once for residual reversion, once for realized slippage.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="faq-bottomline">
-        <span class="bl-tag">Bottom Line</span>
-        <p>If the goal is a higher Sortino and you accept a sub-7% unlevered return, implement <b>Sector Dollar-Neutrality</b>. If you want the <b>9.34% return the deck reports</b>, leave the architecture exactly as it is.</p>
-      </div>
-    </div>
-  </section>
+  
 
 
     </div>
