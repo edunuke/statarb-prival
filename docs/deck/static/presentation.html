@@ -66,13 +66,13 @@
     position: relative;
     width: 100%;
     padding: 76px 4px 88px;
-    scroll-margin-top: 84px;
+    scroll-margin-top: 140px;
     opacity: 1;
     visibility: visible;
     display: block;
   }
   section.page-section > h2 {
-    position: sticky; top: 8px; z-index: 30;
+    position: sticky; top: 72px; z-index: 30;
     margin-bottom: 26px;
     padding: 18px 0 14px;
     background: linear-gradient(180deg, rgba(8, 13, 26, 0.95) 0%, rgba(8, 13, 26, 0.85) 55%, rgba(8, 13, 26, 0) 100%);
@@ -82,33 +82,11 @@
 
   .deck-body { width: 100%; display: block; }
 
-  /* ---------- floating left index bar ---------- */
-  .index-col { position: relative; align-items: flex-start; padding-top: 32px; }
-  .index-card {
-    position: sticky; top: 32px;
-    display: flex; flex-direction: column;
-    width: 100%;
-    background: linear-gradient(160deg, rgba(15, 23, 42, 0.92), rgba(8, 13, 26, 0.88));
-    border: 1px solid var(--stroke-highlight);
-    border-radius: 18px;
-    padding: 22px 18px 16px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-  }
-  .index-brand {
-    display: flex; align-items: center; gap: 12px;
-    text-decoration: none; color: var(--head);
-  }
-  .index-brand:hover { text-decoration: none; }
+  /* ---------- index drawer ---------- */
   .brand-dot {
     width: 10px; height: 10px; border-radius: 50%;
     background: var(--teal-bright); box-shadow: 0 0 16px var(--teal-bright);
     flex: 0 0 auto;
-  }
-  .brand-text {
-    font-family: "Spectral", Georgia, serif; font-weight: 700;
-    font-size: 15px; line-height: 1.2; letter-spacing: 0.3px; color: var(--head);
   }
   .index-progress {
     height: 3px; border-radius: 3px; overflow: hidden;
@@ -171,15 +149,19 @@
   .idx-burger::before { top: 0; box-shadow: 0 4.5px 0 var(--teal-bright); }
   .idx-burger::after { bottom: 0; }
 
-  /* ---------- offcanvas (mobile index drawer) ---------- */
-  .offcanvas {
+  /* ---------- offcanvas index drawer ---------- */
+  .offcanvas.index-drawer {
+    width: 340px; max-width: 90vw;
     background: linear-gradient(160deg, var(--bg1), var(--bg0));
     color: var(--text);
     border-right: 1px solid var(--stroke-highlight);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   }
   .offcanvas-header { border-bottom: 1px solid rgba(255, 255, 255, 0.07); margin-bottom: 12px; }
-  .offcanvas-title { font-family: "Spectral", Georgia, serif; font-weight: 700; color: var(--head); font-size: 17px; }
+  .offcanvas-title { font-family: "Spectral", Georgia, serif; font-weight: 700; color: var(--head); font-size: 17px; display: flex; align-items: center; gap: 10px; }
   .offcanvas .btn-close { filter: invert(1) grayscale(0.6); }
+  .index-drawer .index-list { max-height: calc(100vh - 280px); }
+  .index-drawer .index-foot { margin-top: 16px; }
 
   /* ---------- top reading progress ---------- */
   .top-progress { position: fixed; top: 0; left: 0; right: 0; height: 4px; z-index: 1060; background: transparent; pointer-events: none; }
@@ -394,10 +376,6 @@
   }
 
   /* ---------- responsive ---------- */
-  @media (max-width: 1199.98px) {
-    section.page-section > h2 { top: 56px; }
-    section.page-section { scroll-margin-top: 120px; }
-  }
   @media (max-width: 991.98px) {
     .faq-grid { grid-template-columns: 1fr; }
     .arch-grid { grid-template-columns: 1fr; }
@@ -414,16 +392,17 @@
 </head>
 <body>
 
-<button class="btn index-toggle d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#indexOffcanvas" aria-controls="indexOffcanvas" aria-label="Open table of contents">
+<button class="btn index-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#indexOffcanvas" aria-controls="indexOffcanvas" aria-label="Open table of contents">
   <span class="idx-burger" aria-hidden="true"></span><span>Index</span>
 </button>
-<div class="offcanvas offcanvas-start" tabindex="-1" id="indexOffcanvas" aria-labelledby="indexOffcanvasLabel">
+<div class="offcanvas offcanvas-start index-drawer" tabindex="-1" id="indexOffcanvas" aria-labelledby="indexOffcanvasLabel">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="indexOffcanvasLabel">S&amp;P 500 Stat-Arb Deck</h5>
+    <h5 class="offcanvas-title" id="indexOffcanvasLabel"><span class="brand-dot"></span> S&amp;P 500 Stat-Arb Deck</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
-    <ul class="nav nav-pills flex-column gap-1 index-spy" id="index-spy-mobile">
+    <div class="index-progress" aria-hidden="true"><div class="index-progress-bar" id="index-progress-bar"></div></div>
+    <ul class="nav nav-pills flex-column gap-1 index-list index-spy" id="index-spy">
       <li class="nav-item"><a class="nav-link" href="#sec-cover"><span class="idx-num">01</span>Cover</a></li>
       <li class="nav-item"><a class="nav-link" href="#sec-thesis"><span class="idx-num">02</span>Investment Thesis</a></li>
       <li class="nav-item"><a class="nav-link" href="#sec-architecture"><span class="idx-num">03</span>Architecture Pipeline</a></li>
@@ -441,6 +420,7 @@
       <li class="nav-item"><a class="nav-link" href="#sec-faq-sector"><span class="idx-num">15</span>FAQ · Sector Neutrality</a></li>
       <li class="nav-item"><a class="nav-link" href="#sec-faq-stops"><span class="idx-num">16</span>FAQ · Stop-Loss</a></li>
     </ul>
+    <div class="index-foot"><span>Report</span><span>2025 → 2026</span></div>
   </div>
 </div>
 
@@ -1196,37 +1176,9 @@
     }
 ]</script>
 
-<main class="page-main container-fluid px-3 px-xl-4">
+<main class="page-main container-fluid px-3 px-xl-5">
   <div class="row g-0">
-    <aside class="index-col d-none d-xl-block col-xl-3 col-xxl-2">
-      <nav class="index-card" aria-label="Table of contents">
-        <a class="index-brand" href="#sec-cover">
-          <span class="brand-dot"></span>
-          <span class="brand-text">S&amp;P 500<br>Stat-Arb Deck</span>
-        </a>
-        <div class="index-progress" aria-hidden="true"><div class="index-progress-bar" id="index-progress-bar"></div></div>
-        <ul class="nav nav-pills flex-column gap-1 index-list index-spy" id="index-spy">
-      <li class="nav-item"><a class="nav-link" href="#sec-cover"><span class="idx-num">01</span>Cover</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-thesis"><span class="idx-num">02</span>Investment Thesis</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-architecture"><span class="idx-num">03</span>Architecture Pipeline</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-accuracy"><span class="idx-num">04</span>Forecast vs. Realized</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-growth"><span class="idx-num">05</span>Capital Growth</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-sizing"><span class="idx-num">06</span>Risk Funnel &amp; Sizing</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-hedge"><span class="idx-num">07</span>Convex Tail Hedge</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-tearsheet"><span class="idx-num">08</span>Sleeve Tearsheet</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-attribution"><span class="idx-num">09</span>Funnel Attribution</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-factors"><span class="idx-num">10</span>Factor Audit</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-summary"><span class="idx-num">11</span>Out-of-Sample Summary</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-governance"><span class="idx-num">12</span>Governance &amp; Controls</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-deployment"><span class="idx-num">13</span>Live Deployment</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-faq-moo"><span class="idx-num">14</span>FAQ · Passive Limits</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-faq-sector"><span class="idx-num">15</span>FAQ · Sector Neutrality</a></li>
-      <li class="nav-item"><a class="nav-link" href="#sec-faq-stops"><span class="idx-num">16</span>FAQ · Stop-Loss</a></li>
-        </ul>
-        <div class="index-foot"><span>Report</span><span>2025 → 2026</span></div>
-      </nav>
-    </aside>
-    <div class="content-col col-12 col-xl-9 col-xxl-10">
+    <div class="content-col col-12">
 
 
   <!-- 01 · COVER SLIDE -->
@@ -1915,15 +1867,55 @@ flowchart TD
     });
   }
 
-  // ====== SINGLE-PAGE SCROLL: SCROLLSPY + READING PROGRESS ======
-  function initSpy(selector) {
-    var el = document.querySelector(selector);
-    if (el && typeof bootstrap !== 'undefined') {
-      new bootstrap.ScrollSpy(document.body, { target: selector, rootMargin: '0px 0px -55% 0px' });
+  // ====== SINGLE-PAGE SCROLL: ACTIVE INDEX + READING PROGRESS ======
+  var sections = Array.prototype.slice.call(document.querySelectorAll('main section[id]'));
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('#index-spy .nav-link'));
+
+  function setActiveNav(id) {
+    navLinks.forEach(function (link) {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+    });
+    var activeLink = document.querySelector('#index-spy .nav-link.active');
+    if (!activeLink) return;
+    var list = document.getElementById('index-spy');
+    if (!list) return;
+    var linkRect = activeLink.getBoundingClientRect();
+    var listRect = list.getBoundingClientRect();
+    if (linkRect.top < listRect.top + 8) {
+      list.scrollTop -= (listRect.top + 8 - linkRect.top);
+    } else if (linkRect.bottom > listRect.bottom - 8) {
+      list.scrollTop += (linkRect.bottom - (listRect.bottom - 8));
     }
   }
-  initSpy('#index-spy');
-  initSpy('#index-spy-mobile');
+
+  var topBar = document.getElementById('top-progress-bar');
+  var idxBar = document.getElementById('index-progress-bar');
+  var lastActive = '';
+
+  function onScrollProgress() {
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - doc.clientHeight;
+    var pct = max > 0 ? (doc.scrollTop / max) * 100 : 0;
+    if (topBar) topBar.style.width = pct + '%';
+    if (idxBar) idxBar.style.width = pct + '%';
+
+    var fromTop = doc.scrollTop + 140;
+    var current = sections.length ? sections[0].id : '';
+    for (var i = 0; i < sections.length; i++) {
+      if (sections[i].offsetTop <= fromTop) current = sections[i].id;
+      else break;
+    }
+    if (doc.scrollTop + doc.clientHeight >= doc.scrollHeight - 4) {
+      current = sections[sections.length - 1].id;
+    }
+    if (current !== lastActive) {
+      lastActive = current;
+      setActiveNav(current);
+    }
+  }
+  window.addEventListener('scroll', onScrollProgress, { passive: true });
+  window.addEventListener('resize', onScrollProgress);
+  document.addEventListener('DOMContentLoaded', onScrollProgress);
 
   document.querySelectorAll('#indexOffcanvas .index-spy .nav-link').forEach(function (link) {
     link.addEventListener('click', function () {
