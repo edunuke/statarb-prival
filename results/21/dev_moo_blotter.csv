@@ -1,0 +1,4 @@
+Ticker,Action,Order_Type,Delta_Shares,Target_Shares,Current_Shares,Est_Order_USD,Target_Weight_%,ADV_Participation_%,Price_Ref
+CBRE,SELL,MOO,591,-591,0,87379.35,-34.95,0.008,147.85
+FRT,BUY,MOO,656,656,0,76811.04,30.72,0.011,117.09
+SPY,BUY,MOO,64,64,0,49292.16,19.72,0.0,770.19

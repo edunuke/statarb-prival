@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 
 BASE_DIR = Path(__file__).resolve().parent
 DECK_HTML = BASE_DIR / "static" / "presentation.html"
+DECK_V2_HTML = BASE_DIR / "static" / "presentation_v2.html"
 
 CHART_FILES = {
     "__CHART_EXPECTATION__": "dev_expectation_vs_realized.png",
@@ -37,6 +38,11 @@ def build_deck() -> str:
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
     return build_deck()
+
+
+@app.get("/v2", response_class=HTMLResponse)
+def deck_v2() -> str:
+    return DECK_V2_HTML.read_text(encoding="utf-8")
 
 
 @app.get("/health")

@@ -189,6 +189,7 @@ def main() -> None:
     print("Fetching S&P 500 constituents from Wikipedia ...")
     constituents = fetch_sp500_constituents()
     tickers = constituents["Symbol"].tolist()
+    tickers.append("SPY")
     print(f"  Found {len(tickers)} tickers.")
     constituents.to_csv(output_dir / "constituents.csv", index=False)
     print(f"  Saved -> {output_dir / 'constituents.csv'}")
