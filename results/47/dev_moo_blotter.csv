@@ -1,0 +1,4 @@
+Ticker,Action,Order_Type,Delta_Shares,Target_Shares,Current_Shares,Est_Order_USD,Target_Weight_%,ADV_Participation_%,Price_Ref
+BX,BUY,MOO,879,879,0,119675.84,47.87,0.012,136.15
+KKR,SELL,MOO,744,-744,0,80151.12,-32.06,0.014,107.73
+SPY,SELL,MOO,22,-22,0,16944.18,-6.78,0.0,770.19

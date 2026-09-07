@@ -5,8 +5,9 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 BASE_DIR = Path(__file__).resolve().parent
-DECK_HTML = BASE_DIR / "static" / "presentation.html"
+DECK_HTML = BASE_DIR / "static" / "presentation_v1.html"
 DECK_V2_HTML = BASE_DIR / "static" / "presentation_v2.html"
+DECK_V3_HTML = BASE_DIR / "static" / "presentation_v3.html"
 
 CHART_FILES = {
     "__CHART_EXPECTATION__": "dev_expectation_vs_realized.png",
@@ -37,12 +38,32 @@ def build_deck() -> str:
 
 @app.get("/", response_class=HTMLResponse)
 def index() -> str:
+    return DECK_V3_HTML.read_text(encoding="utf-8")
+
+
+@app.get("/v1", response_class=HTMLResponse)
+def deck_v1() -> str:
     return build_deck()
 
 
 @app.get("/v2", response_class=HTMLResponse)
 def deck_v2() -> str:
     return DECK_V2_HTML.read_text(encoding="utf-8")
+
+
+@app.get("/v3", response_class=HTMLResponse)
+def deck_v3() -> str:
+    return DECK_V3_HTML.read_text(encoding="utf-8")
+
+
+@app.get("/checklist", response_class=HTMLResponse)
+def checklist() -> str:
+    return (BASE_DIR / "static" / "statarb_checklist.html").read_text(encoding="utf-8")
+
+
+@app.get("/report/v3", response_class=HTMLResponse)
+def report_v3() -> str:
+    return (BASE_DIR / "static" / "report_v3.html").read_text(encoding="utf-8")
 
 
 @app.get("/health")

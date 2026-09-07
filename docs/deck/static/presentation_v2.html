@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="author" content="Institutional Quant Research">
-<title>S&amp;P 500 Institutional Stat-Arb — Phase II Presentation</title>
+<title>S&amp;P 500 Institutional Stat-Arb — v2 Presentation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spectral:wght@600;700&display=swap" rel="stylesheet">
@@ -807,7 +807,7 @@
   <section id="sec-cover" class="page-section">
     <div class="cover">
       <div class="brand"><span class="dot"></span> Quantitative Research &amp; Portfolio Management &nbsp;·&nbsp; Production MVP Engine</div>
-      <h1>S&amp;P 500 Institutional<br><span class="rule">Statistical Arbitrage</span> Engine <span style="color:var(--teal-bright)">· Phase II</span></h1>
+      <h1>S&amp;P 500 Institutional<br><span class="rule">Statistical Arbitrage</span> Engine <span style="color:var(--teal-bright)">· v2</span></h1>
       <p class="sub">A simplified, market-neutral pairs-trading engine designed to capture mean-reversion profits with zero market exposure — rebuilt with fewer moving parts, a noise-filtered regime override, and institutionally calibrated risk controls.</p>
 
       <!-- Executive KPI Highlight Cards -->
@@ -820,7 +820,7 @@
         <div class="exec-card">
           <div class="val white" id="cover-end-value">$280,755.19</div>
           <div class="lbl">End Portfolio Value</div>
-          <div class="subtxt">Starting capital: $250,000 net of all fees &amp; costs</div>
+          <div class="subtxt">Starting capital: $250,000 net of all fees &amp; costs over 500 trading days</div>
         </div>
         <div class="exec-card">
           <div class="val gold" id="cover-win-rate">52.3%</div>
@@ -1200,13 +1200,12 @@ flowchart TD
         <li><b>Production Crash Resilience:</b> Model state (Kalman states, context hyperplanes, quarantine timers) persists automatically to disk.</li>
       </ul>
     </div>
-    <p class="dim" style="margin-top:12px; text-align:center">Technology Stack: <b>Python 3.11+</b> · <b>NumPy / Pandas</b> · <b>SciPy (SLSQP)</b> · <b>VectorBT</b> · <b>MabWiser</b> · <b>KaTeX</b>.</p>
     </div>
   </section>
 
   <!-- 11 · LIVE DEPLOYMENT CHECKLIST -->
   <section id="sec-deployment" class="page-section">
-    <h2><span class="kicker">Next Steps</span> Phase 2: Live Micro-Allocation Checklist</h2>
+    <h2><span class="kicker">Next Steps</span> Live Micro-Allocation Checklist</h2>
     <div class="deck-body">
       <p class="lead">The algorithmic logic is frozen and stable. Transitioning from out-of-sample simulation to live exchange routing requires deploying the following production infrastructure layers.</p>
       <div class="cols" style="grid-template-columns: 1fr 1fr;">
@@ -1345,7 +1344,7 @@ flowchart TD
           <ul>
             <li>The <b>reference configuration</b> (<code>entry_ecdf_percentile=0.90</code>, <code>min_override_z=0.60</code>, <code>friction_clearance=15.0</code>) produces <b>+5.99% ann.</b> at <b>zero measurable market beta</b> — the only run passing all neutrality tests.</li>
             <li>No Phase 1 parameter combination achieved the 8—20% acceptance band while maintaining market neutrality.</li>
-            <li>No Phase 2 (secondary params) or <code>friction_clearance_multiplier</code> runs completed.</li>
+            <li>No v2 (secondary params) or <code>friction_clearance_multiplier</code> runs completed.</li>
           </ul>
         </div>
       </div>
