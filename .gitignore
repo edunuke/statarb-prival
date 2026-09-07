@@ -1,30 +1,5 @@
 # Stat-Arb Research Notebooks (private IP - protect from public repo)
-statarb_1.0.ipynb
-statarb_1.1.ipynb
-statarb_1.2.ipynb
-statarb_1.3.ipynb
-statarb_1.4.ipynb
-statarb_1.5_best.ipynb
-statarb_1.6.ipynb
-statarb_1.7.ipynb
-statarb_1.8.ipynb
-statarb_1.9.ipynb
-statarb_2.0.ipynb
-statarb_2.1.ipynb
-statarb_2.2.ipynb
-statarb_2.3.ipynb
-statarb_2.4.ipynb
-statarb_2.5_tune.py
-statarb_2.5.ipynb
-statarb_2.5.py
-statarb_2.6.ipynb
-statarb_2.7.ipynb
-statarb_2.8.ipynb
-statarb_2.9.ipynb
-statarb_3.0_tune.py
-statarb_3.0.ipynb
-statarb_3.0.py
-statarb_3.1.ipynb
+statarb_*
 
 # Python cache
 __pycache__/

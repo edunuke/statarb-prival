@@ -66,6 +66,11 @@ def report_v3() -> str:
     return (BASE_DIR / "static" / "report_v3.html").read_text(encoding="utf-8")
 
 
+@app.get("/report/v3.2", response_class=HTMLResponse)
+def report_v32() -> str:
+    return (BASE_DIR / "static" / "report_v3.2.html").read_text(encoding="utf-8")
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
