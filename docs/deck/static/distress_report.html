@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Institutional Quant Research">
+<title>Stat-Arb v3.2 — Market Distress & Regime Backtest Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spectral:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+<style>
+  :root {
+    --bg0: #080d1a;
+    --bg1: #0f172a;
+    --panel: rgba(255, 255, 255, 0.045);
+    --panel2: rgba(255, 255, 255, 0.075);
+    --stroke: #1e3a5f;
+    --stroke-highlight: #2b5288;
+    --teal: #2a9d8f;
+    --teal-bright: #38d39f;
+    --blue: #4a7bab;
+    --orange: #f07167;
+    --gold: #e9c46a;
+    --muted: #94a3b8;
+    --text: #e2e8f0;
+    --head: #ffffff;
+    --mono: "SFMono-Regular", ui-monospace, "Cascadia Code", Consolas, monospace;
+    --win-red-bg: rgba(239, 68, 68, 0.12);
+    --win-red-border: rgba(239, 68, 68, 0.35);
+    --win-yellow-bg: rgba(234, 179, 8, 0.12);
+    --win-yellow-border: rgba(234, 179, 8, 0.35);
+    --win-green-bg: rgba(42, 157, 143, 0.16);
+    --win-green-border: rgba(42, 157, 143, 0.4);
+    --bear-bg: rgba(240, 113, 103, 0.07);
+    --bear-border: rgba(240, 113, 103, 0.18);
+    --bull-bg: rgba(56, 211, 159, 0.06);
+    --bull-border: rgba(56, 211, 159, 0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(1200px 700px at 85% -10%, rgba(42, 157, 143, 0.18), transparent 60%),
+      radial-gradient(1000px 600px at -10% 110%, rgba(74, 123, 171, 0.18), transparent 60%),
+      linear-gradient(160deg, var(--bg0), var(--bg1));
+    background-attachment: fixed;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .report-container { max-width: 1200px; margin: 0 auto; padding: 20px 24px 80px; }
+  h1 { font-family: "Spectral", Georgia, serif; font-weight: 700; color: var(--head); }
+  h2 {
+    font-family: "Spectral", Georgia, serif; font-weight: 600; color: var(--head);
+    font-size: 24px; letter-spacing: 0.2px;
+    display: flex; align-items: center; gap: 16px;
+    margin-top: 48px; margin-bottom: 20px;
+    padding-top: 16px;
+  }
+  h2 .kicker {
+    font-family: "Inter", sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold);
+    background: rgba(233, 196, 106, 0.12);
+    border: 1px solid rgba(233, 196, 106, 0.4); border-radius: 999px;
+    padding: 4px 14px; white-space: nowrap;
+  }
+  h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--stroke), transparent); }
+  h3 {
+    font-family: "Spectral", Georgia, serif; font-weight: 600; color: var(--head);
+    font-size: 18px; margin-top: 28px; margin-bottom: 12px;
+  }
+  h4 {
+    font-family: "Inter", sans-serif; font-weight: 600; color: var(--teal-bright);
+    font-size: 15px; margin-top: 20px; margin-bottom: 8px;
+  }
+  p { line-height: 1.6; margin-bottom: 12px; }
+  .muted { color: var(--muted); }
+  .dim { color: var(--muted); font-size: 14px; }
+  .mono { font-family: var(--mono); }
+  b, strong { color: var(--head); }
+  em { color: var(--gold); font-style: normal; font-weight: 600; }
+  code { font-family: var(--mono); font-size: 13px; color: var(--gold); background: rgba(233,196,106,0.1); border: 1px solid rgba(233,196,106,0.25); border-radius: 5px; padding: 2px 6px; }
+
+  .report-header {
+    text-align: center; padding: 60px 0 40px;
+    border-bottom: 2px solid var(--stroke-highlight); margin-bottom: 32px;
+  }
+  .report-header h1 { font-size: 36px; margin-bottom: 12px; }
+  .report-header .subtitle {
+    font-size: 15px; color: var(--muted); font-family: var(--mono);
+    letter-spacing: 0.5px;
+  }
+
+  table {
+    width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px;
+    margin: 0 auto;
+  }
+  th {
+    text-align: left; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--gold); font-weight: 700; padding: 12px 14px;
+    border-bottom: 2px solid var(--stroke-highlight); background: var(--panel2);
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--stroke); color: #ffffff; }
+  td.num, th.num { font-family: var(--mono); text-align: right; }
+
+  tr.win-red td { background: rgba(239,68,68,0.06); border-bottom-color: rgba(239,68,68,0.15); }
+  tr.win-green td { background: rgba(42,157,143,0.06); border-bottom-color: rgba(42,157,143,0.15); }
+  tr.bear-row td { background: var(--bear-bg); border-bottom-color: var(--bear-border); }
+  tr.bull-row td { background: var(--bull-bg); border-bottom-color: var(--bull-border); }
+
+  td.wr-red { color: #f87171; font-weight: 700; }
+  td.wr-green { color: var(--teal-bright); font-weight: 700; }
+  td.wr-gold { color: var(--gold); font-weight: 700; }
+
+  .badge-pass {
+    display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700;
+    color: var(--teal-bright); background: rgba(42,157,143,0.15);
+    border: 1px solid rgba(42,157,143,0.4); border-radius: 4px;
+    padding: 2px 8px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge-fail {
+    display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700;
+    color: var(--orange); background: rgba(240,113,103,0.12);
+    border: 1px solid rgba(240,113,103,0.35); border-radius: 4px;
+    padding: 2px 8px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .regime-badge-bear {
+    display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700;
+    color: var(--orange); background: rgba(240,113,103,0.15);
+    border: 1px solid rgba(240,113,103,0.35); border-radius: 4px;
+    padding: 2px 8px;
+  }
+  .regime-badge-bull {
+    display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700;
+    color: var(--teal-bright); background: rgba(56,211,159,0.12);
+    border: 1px solid rgba(56,211,159,0.3); border-radius: 4px;
+    padding: 2px 8px;
+  }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--stroke);
+    border-radius: 14px; padding: 22px 24px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    margin-bottom: 20px;
+  }
+  .card.highlight { border-color: var(--stroke-highlight); background: rgba(255,255,255,0.05); }
+  .card h3 {
+    font-size: 16px; color: var(--head); margin-bottom: 12px; letter-spacing: 0.3px; font-weight: 600;
+  }
+  .card h3::before {
+    content: ""; display: inline-block; width: 8px; height: 8px;
+    border-radius: 2px; background: var(--teal-bright); margin-right: 10px;
+  }
+  .card ul { list-style: none; }
+  .card li {
+    font-size: 14px; line-height: 1.55; color: var(--text);
+    padding-left: 16px; position: relative; margin-bottom: 9px;
+  }
+  .card li:last-child { margin-bottom: 0; }
+  .card li::before { content: "\25B8"; position: absolute; left: 0; color: var(--blue); font-weight: bold; }
+
+  .verdict-box {
+    max-width: 100%; margin: 18px auto 0; padding: 16px 22px;
+    border-radius: 14px; border: 1px solid var(--stroke-highlight);
+    background: rgba(255,255,255,0.03);
+  }
+  .verdict-box ul { list-style: none; margin: 0; }
+  .verdict-box li {
+    font-size: 14px; line-height: 1.55; color: var(--text);
+    padding-left: 16px; position: relative; margin-bottom: 6px;
+  }
+  .verdict-box li::before { content: "\25B8"; position: absolute; left: 0; color: var(--teal-bright); font-weight: bold; }
+
+  .table-scroll { overflow-x: auto; margin-bottom: 24px; }
+
+  @media (max-width: 767.98px) {
+    .report-header h1 { font-size: 26px; }
+  }
+
+  @media print {
+    body {
+      background: #0a0a0a !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .report-container { max-width: 100%; padding: 12px; }
+    h2 { page-break-after: avoid; }
+    table, .card, .kpi-card, .log-block, .imgwrap img { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="report-container">
+
+<!-- HEADER -->
+<div class="report-header">
+  <h1>Stat-Arb v3.2 — Market Distress &amp; Regime Backtest Results</h1>
+  <div class="subtitle">18 out-of-sample stress windows against the v3.2 engine</div>
+</div>
+
+<!-- METHODOLOGY -->
+<p class="dim" style="max-width:800px; margin:0 auto 24px; text-align:center;">
+  Warmup + OOS two-file runs against <code>data/distress/{window}.csv</code> with
+  <code>price_csv = data/distress_in/{window}.csv</code>. Each window trades <strong>only</strong> the
+  distress OOS days (start_idx aligned to first OOS row).<br>
+  Regime column = realized SPY total return over the OOS window
+  (neg = net bear, pos = net bull), from each run's <code>Benchmark Return [%]</code>.
+</p>
+
+<!-- RESULTS TABLE -->
+<h2><span class="kicker">Results</span> Results Table (Windows 2–19)</h2>
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Window</th>
+      <th>Regime</th>
+      <th class="num">OOS Days</th>
+      <th class="num">Trades</th>
+      <th class="num">Win%</th>
+      <th class="num">Total Return</th>
+      <th class="num">Sortino</th>
+      <th class="num">Max DD</th>
+      <th class="num">Fees</th>
+      <th>Neutrality</th>
+      <th>Comments</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="bear-row">
+      <td class="num">2</td>
+      <td>ai_geo_2026 (Jan–Mar 26)</td>
+      <td><span class="regime-badge-bear">Bear</span></td>
+      <td class="num">45</td>
+      <td class="num">111</td>
+      <td class="num">46.2%</td>
+      <td class="num wr-red">−6.78%</td>
+      <td class="num wr-red">−4.20</td>
+      <td class="num">8.17%</td>
+      <td class="num">$1,105</td>
+      <td><span class="badge-fail">FAIL</span> β=−0.28, R²=11.1%</td>
+      <td>Worst window. Gross beta leak (−0.28, p=0.02) + 11% R² = the book was a directional bet long the wrong side of an AI/geo selloff, and churned 111 trades in 45 days doing it. Off both axes: not neutral, not profitable.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">3</td>
+      <td>ath_2026 (Jul–Sep 26)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">46</td>
+      <td class="num">33</td>
+      <td class="num">39.4%</td>
+      <td class="num wr-green">+1.32%</td>
+      <td class="num">1.23</td>
+      <td class="num">3.52%</td>
+      <td class="num">$561</td>
+      <td><span class="badge-fail">FAIL</span> bull +0.45</td>
+      <td>Thin and mildly green. Bull-market beta +0.45 (long beta in an ATH tape) is exactly what made it work — i.e. a risk-on bet wearing a stat-arb costume. 33 trades = no statistical content; don't quote.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">4</td>
+      <td>aug_vol_2025 (Jul–Sep 25)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">46</td>
+      <td class="num">17</td>
+      <td class="num">35.3%</td>
+      <td class="num wr-green">+4.29%</td>
+      <td class="num wr-gold">12.29</td>
+      <td class="num">1.49%</td>
+      <td class="num">$314</td>
+      <td><span class="badge-fail">FAIL</span> bear +0.63</td>
+      <td>The pretty number (Sortino 12.3) on 17 trades. Bear beta +0.63 is a short-hedge whiff, but the low fee bill ($314) shows it wasn't churning — it was quietly net-short the hedge. Statistically meaningless, but the cleanest <em>book behavior</em> of the batch.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">5</td>
+      <td>bear_2022 (Sep 22–Feb 23)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">121</td>
+      <td class="num">299</td>
+      <td class="num">52.7%</td>
+      <td class="num wr-red">−2.00%</td>
+      <td class="num wr-red">−0.73</td>
+      <td class="num">6.93%</td>
+      <td class="num">$3,420</td>
+      <td><span class="badge-fail">FAIL</span> bear +0.05</td>
+      <td>299 trades in 121 days = the churn archetype: 52.7% win rate ground down to −2% by $3.4k fees (PF 0.96). Longest testing window of the mixed set that still couldn't clear its own turnover tax.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">6</td>
+      <td>calm_2024 (Jan–Jun 24)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">124</td>
+      <td class="num">280</td>
+      <td class="num">45.5%</td>
+      <td class="num wr-green">+0.13%</td>
+      <td class="num">0.15</td>
+      <td class="num">8.69%</td>
+      <td class="num">$3,526</td>
+      <td><span class="badge-fail">FAIL</span> β=+0.06</td>
+      <td>The "no-signal" control: flat market, flat strategy, yet −$3.5k in fees. This is the baseline that says <em>in quiet tape the engine pays to sit still</em>. Highest fee bill in the table with nothing to show.</td>
+    </tr>
+    <tr class="bear-row">
+      <td class="num">7</td>
+      <td>china_2015 (Aug 15–Feb 16)</td>
+      <td><span class="regime-badge-bear">Bear</span></td>
+      <td class="num">123</td>
+      <td class="num">72</td>
+      <td class="num">50.0%</td>
+      <td class="num wr-red">−0.76%</td>
+      <td class="num wr-red">−0.44</td>
+      <td class="num">4.38%</td>
+      <td class="num">$975</td>
+      <td><span class="badge-fail">FAIL</span> bull −0.11</td>
+      <td>Held value through a −12.5% bleed (−0.76%) at a lean fee bill — the "protect capital" profile. But no alpha: flat PnL, and a bull-beta −0.11 leak. Survive-not-thrive.</td>
+    </tr>
+    <tr class="bear-row">
+      <td class="num">8</td>
+      <td>covid_2020 (Feb–Aug 20)</td>
+      <td><span class="regime-badge-bear">Bear</span></td>
+      <td class="num">136</td>
+      <td class="num">483</td>
+      <td class="num">52.6%</td>
+      <td class="num wr-green">+29.34%</td>
+      <td class="num wr-gold">8.37</td>
+      <td class="num">4.44%</td>
+      <td class="num">$4,026</td>
+      <td><span class="badge-fail">FAIL</span> β=−0.10, R²=8.3%</td>
+      <td>The headline result and the most misleading. +29% / Sortino 8.4 is real machinery, but it rode a significant short-crash/long-recovery beta (β=−0.10, p=0.0007, R²=8.3%) on today's survivorship-clean universe. It's a <em>directional</em> vol-position that happened to win, not neutral alpha. Highest fees ($4k). Treat +29% as a beta-bet ceiling, not a stat-arb claim.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">9</td>
+      <td>dotcom_2001 (Jun 01–May 02)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">248</td>
+      <td class="num">208</td>
+      <td class="num">50.5%</td>
+      <td class="num wr-green">+3.99%</td>
+      <td class="num">0.60</td>
+      <td class="num">13.25%</td>
+      <td class="num">$2,678</td>
+      <td><span class="badge-fail">FAIL</span> bear +0.10</td>
+      <td>Most statistically meaningful window (248 days) and the verdict is damning: +3.99% against +6.96% bench = the book lagged a passive long during a secular unwind, at 13.25% DD and $2.7k fees. Closest to neutral (β=0.016) of anyone — and closest to pointless.</td>
+    </tr>
+    <tr class="bear-row">
+      <td class="num">10</td>
+      <td>gfc_2008 (Sep 08–Mar 09)</td>
+      <td><span class="regime-badge-bear">Bear</span></td>
+      <td class="num">120</td>
+      <td class="num">254</td>
+      <td class="num">50.6%</td>
+      <td class="num wr-green">+6.34%</td>
+      <td class="num">1.99</td>
+      <td class="num">6.75%</td>
+      <td class="num">$2,220</td>
+      <td><span class="badge-fail">FAIL</span> R²=1.6%, bull +0.11</td>
+      <td>Best true stress result: +6.34% vs −43% bench, 6.7% DD, β=+0.04 PASS, bear −0.03 PASS — the book genuinely hedged the crush and harvested the up-tape. Only fails on R² and bull +0.11. This is the <em>model</em> of what works; just shy of the neutrality bar.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">11</td>
+      <td>iran_oil_2026 (Jun–Jul 26)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">43</td>
+      <td class="num">62</td>
+      <td class="num">44.1%</td>
+      <td class="num wr-red">−5.18%</td>
+      <td class="num wr-red">−3.70</td>
+      <td class="num">6.19%</td>
+      <td class="num">$869</td>
+      <td><span class="badge-fail">FAIL</span> β=−0.06, bull −0.22</td>
+      <td>−5.18% on +3.17% bench, worst Sortino outside ai_geo. Whipsaw profile — $869 of fees on 62 trades (churn rate unhealthy), and the crudest beta leak of the recent windows (bull −0.22, bear −0.19). Iran shock wasn't just unprofitable: it exposed the book to both regimes.</td>
+    </tr>
+    <tr class="bear-row">
+      <td class="num">12</td>
+      <td>powell_2018 (Oct–Dec 18)</td>
+      <td><span class="regime-badge-bear">Bear</span></td>
+      <td class="num">61</td>
+      <td class="num">183</td>
+      <td class="num">44.8%</td>
+      <td class="num wr-red">−1.66%</td>
+      <td class="num wr-red">−1.30</td>
+      <td class="num">4.37%</td>
+      <td class="num">$2,065</td>
+      <td><span class="badge-fail">FAIL</span> R²=1.3%, bear +0.13</td>
+      <td>−1.66% on −12.7% bench = held up relatively in the selloff (β=+0.04 PASS, bull −0.02 PASS) — same "survivor" profile as 10 but without the payoff (PF 0.94). Bear +0.13 fails neutrality.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">13</td>
+      <td>rally_2024 (Nov 24–Jan 25)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">59</td>
+      <td class="num">62</td>
+      <td class="num">67.9%</td>
+      <td class="num wr-green">+8.45%</td>
+      <td class="num wr-gold">26.51</td>
+      <td class="num">0.79%</td>
+      <td class="num">$857</td>
+      <td><span class="badge-fail">FAIL</span> β=−0.08, bear −0.25</td>
+      <td>The best raw numbers in the batch: <strong>+8.45% on +3.5% bench, Sortino 26.5, Max DD 0.79%, win 67.9%</strong>. But it's a beta-bet in disguise — negative-leaning book (β=−0.08, bear −0.25, R²=2.2%) that longs the post-election melt-up and shorts the laggards. Small sample (62 trades, 59 days) but the tightest risk control seen anywhere. It made the rally <em>and</em> kept drawdown near zero.</td>
+    </tr>
+    <tr class="bear-row">
+      <td class="num">14</td>
+      <td>rates_2023 (Sep–Oct 23)</td>
+      <td><span class="regime-badge-bear">Bear</span></td>
+      <td class="num">42</td>
+      <td class="num">109</td>
+      <td class="num">42.3%</td>
+      <td class="num wr-red">−3.71%</td>
+      <td class="num wr-red">−4.12</td>
+      <td class="num">5.09%</td>
+      <td class="num">$1,248</td>
+      <td><span class="badge-fail">FAIL</span> β=−0.12, bull −0.07, bear −0.22</td>
+      <td>Worst neutrality of the batch: <strong>β=−0.12 with leaks in BOTH regimes</strong> (bull −0.07, bear −0.22) on top of 3.2% R². −3.71% on a −8.4% bench = relative survivorship, but absolute red with 109 churned trades. The 10Y/5% span wasn't just unprofitable — the book shorted both sides of the rate shock.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">15</td>
+      <td>recovery_2025 (Apr–Aug 25)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">84</td>
+      <td class="num">29</td>
+      <td class="num">50.0%</td>
+      <td class="num wr-green">+5.71%</td>
+      <td class="num wr-gold">7.53</td>
+      <td class="num">2.23%</td>
+      <td class="num">$413</td>
+      <td><span class="badge-fail">FAIL</span> bear +0.10</td>
+      <td>The cleanest neutrality of the whole batch: β=−0.017 (PASS, p=0.72), R²=0.15%, bull +0.001 — every term green except bear +0.096 (thin bear sample in a bull tape). +5.71% on <strong>+25.2% bench</strong> = solid positive, but it trailed the V-recovery badly and only booked 29 trades. Statistically decent (84d) but it captured a fraction of the tape it was trading in.</td>
+    </tr>
+    <tr class="bear-row">
+      <td class="num">16</td>
+      <td>svb_2023 (Mar–May 23)</td>
+      <td><span class="regime-badge-bear">Bear</span></td>
+      <td class="num">64</td>
+      <td class="num">133</td>
+      <td class="num">48.5%</td>
+      <td class="num wr-green">+1.44%</td>
+      <td class="num">1.08</td>
+      <td class="num">3.21%</td>
+      <td class="num">$1,779</td>
+      <td><span class="badge-fail">FAIL</span> β=−0.06, bull −0.29</td>
+      <td>+1.44% on −0.71% bench = the only <em>bear-window</em> in the batch that's green in absolute terms since svb timing. But the banking-crisis profile is ugly mechanically: β=−0.06, R²=0.97%, and <strong>bull −0.29 / bear −0.17 leaks in BOTH regimes</strong> (the same "shorted both sides" signature as rates_2023). $1,779 fees on 133 churned trades in 64 days. Survived; not neutral.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">17</td>
+      <td>tariff_2025 (Feb–Aug 25)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">118</td>
+      <td class="num">119</td>
+      <td class="num">54.3%</td>
+      <td class="num wr-green">+15.96%</td>
+      <td class="num wr-gold">9.48</td>
+      <td class="num">3.26%</td>
+      <td class="num">$1,462</td>
+      <td><span class="badge-fail">FAIL</span> β=−0.08, bull −0.18, bear +0.12</td>
+      <td>Second-best PnL in the batch after covid: <strong>+15.96% on +2.15% bench, Sortino 9.5, Max DD 3.3%, win 54.3%</strong> — real machinery over a 118-day window. But it's the beta-bet archetype again: the book loaded a −0.18 bull / +0.12 bear <strong>both-regime leak</strong> (β=−0.08, R²=3.0%) that longs the pre-tariff melt-up names and shorts the shock laggards. $1,462 fees / 119 churned trades. It <em>worked</em>; it is not neutral.</td>
+    </tr>
+    <tr class="bear-row">
+      <td class="num">18</td>
+      <td>usdowngrade_2011 (Jul–Oct 11)</td>
+      <td><span class="regime-badge-bear">Bear</span></td>
+      <td class="num">71</td>
+      <td class="num">211</td>
+      <td class="num">52.4%</td>
+      <td class="num wr-green">+8.92%</td>
+      <td class="num wr-gold">7.64</td>
+      <td class="num">4.72%</td>
+      <td class="num">$2,124</td>
+      <td><span class="badge-fail">FAIL</span> bull +0.17, bear −0.10</td>
+      <td>The neutrality clean-out outlier: <strong>β=−0.0012 (PASS, p=0.97), R²=0.00%</strong> — statistically the most market-neutral book of the entire batch — <em>and</em> it made +8.92% against a −6.28% downgrade shock, at 4.7% DD. Only fails on the regime betas (bull +0.17 / bear −0.10). 211 churned trades, $2.1k fees, but every gross-neutrality gate green. The single most credible stat-arb result in all 17 windows.</td>
+    </tr>
+    <tr class="bull-row">
+      <td class="num">19</td>
+      <td>yen_carry_2024 (Jul–Sep 24)</td>
+      <td><span class="regime-badge-bull">Bull</span></td>
+      <td class="num">43</td>
+      <td class="num">172</td>
+      <td class="num">49.7%</td>
+      <td class="num wr-red">−4.72%</td>
+      <td class="num wr-red">−4.46</td>
+      <td class="num">5.31%</td>
+      <td class="num">$1,742</td>
+      <td><span class="badge-fail">FAIL</span> β=+0.11, bull +0.21, bear +0.07</td>
+      <td>The 2024 carry-unwind whipsaw, on the wrong side of it: −4.72% on +2.17% bench, worst Sortino (−4.46) after ai_geo and iran. <strong>β=+0.11, R²=5.6% — the book went long the carry-tape right as it unwound.</strong> 172 churned trades / $1.7k fees in 43 days (the worst fee-to-day ratio of the batch). The VIX-65 spike exposed it on both legs; this is the mirror image of usdowngrade 2011 (same mechanics, opposite sign on the regime bet).</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- REGIME CROSS-TAB -->
+<h2><span class="kicker">Cross-Tab</span> Regime Cross-Tab</h2>
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr>
+      <th>Regime</th>
+      <th>Windows</th>
+      <th>Net Result</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="bear-row">
+      <td><span class="regime-badge-bear">Bear</span> (8)</td>
+      <td>ai_geo 2026, china 2015, covid 2020, gfc 2008, powell 2018, rates 2023, svb 2023, usdowngrade 2011</td>
+      <td><strong>+29.3</strong> (COVID), <strong>+8.9</strong> (usdowngrade), <strong>+6.3</strong> (GFC), <strong>+1.4</strong> (svb), <strong>−0.8</strong> (china), <strong>−1.7</strong> (powell), <strong>−3.7</strong> (rates), <strong>−6.8</strong> (ai_geo). <em>Save capital, harvest the V-recover — the downgrade shock (gross-neutral, +9%) is the best neutral-alpha proof in the batch; only the rate/geo shocks bleed on both sides.</em></td>
+    </tr>
+    <tr class="bull-row">
+      <td><span class="regime-badge-bull">Bull</span> (10)</td>
+      <td>ath 2026, aug_vol 2025, bear 2022, calm 2024, dotcom 2001, iran 2026, rally 2024, recovery 2025, tariff 2025, yen_carry 2024</td>
+      <td><strong>+15.9</strong> (tariff), <strong>+8.5</strong> (rally), <strong>+5.7</strong> (recovery), <strong>+4.3</strong> (aug_vol), <strong>+4.0</strong> (dotcom), <strong>+1.3</strong> (ath), <strong>+0.1</strong> (calm), <strong>−2.0</strong> (bear), <strong>−4.7</strong> (yen_carry), <strong>−5.2</strong> (iran). <em>Melt-ups and V-recoveries can be huge (+16 tariff, +8.5 rally); quiet tape is dead flat (+0.1); the fast shocks and whipsaws lose (yen_carry −4.7, iran −5.2).</em></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- CONCLUSION -->
+<h2><span class="kicker">Conclusion</span> Batch Verdict &amp; Improvements</h2>
+
+<!-- What the batch proved -->
+<div class="card highlight">
+<h3>What the batch proved</h3>
+
+<p style="color:#ffffff;"><strong>1. The engine is a regime-conditional vol harness, not a neutral stat-arb book — yet.</strong><br>
+Across 18 out-of-sample stress windows:</p>
+<ul>
+  <li><strong style="color:var(--teal-bright);">It makes money in V-recoveries and melt-ups</strong> — COVID +29.3%, tariff +15.9%, usdowngrade-2011 +8.9%, rally-2024 +8.5%, GFC +6.3%.</li>
+  <li><strong style="color:var(--gold);">It is dead flat or lagging in quiet/grind tape</strong> — calm_2024 +0.1% (on +9.7% bench), dotcom +4.0% (on +7.0% bench), china/powell break-even.</li>
+  <li><strong style="color:var(--orange);">It loses in fast one-sided shocks</strong> — yen_carry −4.7%, iran −5.2%, ai_geo −6.8%, rates −3.7%.</li>
+</ul>
+
+<p style="margin-top:16px; color:#ffffff;"><strong>2. Neutrality is the unresolved blocker: 0/18 pass.</strong></p>
+<ul>
+  <li style="color:#ffffff;">Failure mode narrowed but never disappeared: gross β passes for most of the back half; the consistent leak is a <strong style="color:var(--orange);">single-regime beta (bull or bear)</strong> and elevated R².</li>
+  <li style="color:#ffffff;"><strong style="color:var(--teal-bright);">usdowngrade_2011 is the proof-of-possibility</strong>: β=−0.0012 (p=0.97), R²=0.00%, +8.9% through a crash with 4.7% DD. The engine <em>can</em> be gross-neutral and profitable — that window is the template to reverse-engineer.</li>
+</ul>
+
+<p style="margin-top:16px; color:#ffffff;"><strong>3. The turnover tax is structural.</strong><br>
+$314–$4,026 in fees per window (avg ≈ $1.7k). Best-Sortino windows (rally 26.5, tariff 9.5, aug_vol 12.3) are uniformly the lowest-churn ones. Win rate oscillates 35–68% with no regime edge. The engine trades too much for what it captures in calm tape.</p>
+
+<p style="margin-top:16px; color:#ffffff;"><strong>4. Thin-window discipline matters.</strong><br>
+Windows ≤ 62 bars (2, 3, 4, 11, 12, 14, 19) are diagnostics only. The credible numbers live in the 71–248 day windows (5, 6, 7, 8, 9, 10, 15, 17, 18) — and even those need bootstrap CIs before any quotable claim.</p>
+</div>
+
+<!-- Improvements Table -->
+<h2><span class="kicker">Improvements</span> Ranked by Leverage (Real-World Impact)</h2>
+<div class="table-scroll">
+<table>
+  <thead>
+    <tr>
+      <th style="width:4%">#</th>
+      <th style="width:22%">Fix</th>
+      <th style="width:8%">Impact</th>
+      <th style="width:8%">Effort</th>
+      <th style="width:58%">Why (from the data)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="num wr-gold" style="font-weight:700; font-size:14px;">P1</td>
+      <td><strong>Fix the regime-conditional beta leak</strong> — conditional (bull|bear) neutrality penalty in the SLSQP objective; investigate <code>max_spy_overlay_weight</code> saturation + <code>spy_beta_mults_clipped</code> throttle cutting the hedge instead of the exposure</td>
+      <td><span class="badge-fail" style="border-color:rgba(240,113,103,0.6);">HIGH</span></td>
+      <td>Medium</td>
+      <td>0/18 windows pass neutrality; realized β_m 0.03–0.28 while the 0.05 cap is <em>not binding</em>. This is the difference between "neutral book that can hold client/regulatory capital" and "a directional bet". usdowngrade-2011 proves the fix has a payoff: β≈0 <strong>and</strong> +8.9%.</td>
+    </tr>
+    <tr>
+      <td class="num wr-gold" style="font-weight:700; font-size:14px;">P2</td>
+      <td><strong>Kill the turnover tax</strong> — min-edge gate (don't churn for &lt;0.5% expected yield), raise <code>min_holding_days</code>, widen <code>entry_ecdf_percentile</code> to 0.85, model round-trip cost in entry alpha</td>
+      <td><span class="badge-fail" style="border-color:rgba(240,113,103,0.6);">HIGH</span></td>
+      <td>Low</td>
+      <td>$314–$4,026 fees/window (avg ~$1.7k ≈ 0.7% of NAV <em>every window</em>); best Sortinos are the lowest-churn runs. Directly converts to PnL since win rate is flat 35–68%. Cheap to ship, immediately measurable.</td>
+    </tr>
+    <tr>
+      <td class="num wr-gold" style="font-weight:700; font-size:14px;">P3</td>
+      <td><strong>Bootstrap CIs in reporting</strong> — block-bootstrap (weekly lag) CIs on annualized return / Sortino / net β → <code>ci_report.csv</code> per run</td>
+      <td><span class="badge-pass" style="border-color:rgba(233,196,106,0.5); color:var(--gold); background:rgba(233,196,106,0.1);">MEDIUM</span></td>
+      <td>Low</td>
+      <td>Prevents quoting a 17-trade Sortino (aug_vol 12.3) or a 62-day +8.45% (rally) as if meaningful. Internal governance + IC credibility — not alpha, but stops bad decisions.</td>
+    </tr>
+    <tr>
+      <td class="num wr-gold" style="font-weight:700; font-size:14px;">P4</td>
+      <td><strong>Calibrate execution via micro-cash live test</strong> — measured fill rate / cross cost / locate success by size decile (sector-aware), folded back as <code>slippage_bps</code>, <code>borrow_schedule</code>, <code>liquidity_haircut</code></td>
+      <td><span class="badge-pass" style="border-color:rgba(233,196,106,0.5); color:var(--gold); background:rgba(233,196,106,0.1);">MEDIUM</span></td>
+      <td>High</td>
+      <td>Flat <code>exec_fee</code>/<code>borrow_bps</code> is today's biggest <em>unknown</em> — the batch's numbers assume you can short SMCI/KIM at 50 bps when the market would charge 3–20×. Real calibration de-risks go-live sizing; until P1/P2 land, calibrating a leaking/churning engine wastes desk time.</td>
+    </tr>
+    <tr>
+      <td class="num wr-gold" style="font-weight:700; font-size:14px;">P5</td>
+      <td><strong>Drop ghost-price pairs</strong> — per-pair full-history reconstitution check (legs must trade continuously through warmup + window instead of <code>ffill</code>'d flat gaps)</td>
+      <td><span class="badge-pass" style="border-color:rgba(233,196,106,0.5); color:var(--gold); background:rgba(233,196,106,0.1);">MEDIUM</span></td>
+      <td>Low</td>
+      <td>Removes the worst cheap survivorship bias (GFC/dotcom rows trade on today's membership). One config flag + one filter; immediately makes historical windows credible enough for internal review.</td>
+    </tr>
+    <tr>
+      <td class="num wr-gold" style="font-weight:700; font-size:14px;">P6</td>
+      <td><strong>Gate the flat-tape drag</strong> — trade only when trailing dispersion (cross-sectional σ) is above a floor; sit in cash otherwise</td>
+      <td><span class="wr-green" style="font-weight:700;">LOW</span></td>
+      <td>Medium</td>
+      <td>calm_2024 (+0.1% on +9.7% bench, $3.5k fees) is the control proving the book over-engages in quiet tape. Real benefit, but bounded: flat-tape drag (~1% NAV/yr) is small next to P1's neutrality issue and P2's fee bleed. Do it after P1+P2 if capacity remains.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- Sequencing -->
+<div class="card">
+<h3>Sequencing for a desk (pragmatic, not academic)</h3>
+<ol style="list-style:none; padding:0;">
+  <li style="font-size:14px; line-height:1.55; color:var(--text); padding-left:28px; position:relative; margin-bottom:10px;">
+    <span style="position:absolute; left:0; font-weight:700; color:var(--teal-bright);">1.</span>
+    <strong>Ship P2 first</strong> (Low effort, HIGH impact, instantly measurable fee savings) — it's the only fix that pays for itself in the first week and it buys goodwill/credibility for the harder items.
+  </li>
+  <li style="font-size:14px; line-height:1.55; color:var(--text); padding-left:28px; position:relative; margin-bottom:10px;">
+    <span style="position:absolute; left:0; font-weight:700; color:var(--teal-bright);">2.</span>
+    <strong>Then P1</strong> (the actual blocker) — Medium effort, is what makes every number in this table meaningful. Everything else is decorating a book that isn't neutral yet.
+  </li>
+  <li style="font-size:14px; line-height:1.55; color:var(--text); padding-left:28px; position:relative; margin-bottom:10px;">
+    <span style="position:absolute; left:0; font-weight:700; color:var(--teal-bright);">3.</span>
+    <strong>P5 alongside P1</strong> (both are config-level, low cost) so the historical windows being used to validate P1 aren't contaminated.
+  </li>
+  <li style="font-size:14px; line-height:1.55; color:var(--text); padding-left:28px; position:relative; margin-bottom:10px;">
+    <span style="position:absolute; left:0; font-weight:700; color:var(--teal-bright);">4.</span>
+    <strong>P3 before any external review</strong> — even with P1+P2 landed, no window result gets quoted without a CI.
+  </li>
+  <li style="font-size:14px; line-height:1.55; color:var(--text); padding-left:28px; position:relative; margin-bottom:10px;">
+    <span style="position:absolute; left:0; font-weight:700; color:var(--teal-bright);">5.</span>
+    <strong>P4 (micro-cash) only after P1+P2</strong> — calibrating execution for a leaking, churning book is wasted effort; calibrate the <em>fixed</em> book against real size.
+  </li>
+  <li style="font-size:14px; line-height:1.55; color:var(--text); padding-left:28px; position:relative; margin-bottom:10px;">
+    <span style="position:absolute; left:0; font-weight:700; color:var(--teal-bright);">6.</span>
+    <strong>P6 when capacity allows</strong> — or fold its logic (dispersion floor) into the P2 entry gate as a second filter.
+  </li>
+</ol>
+</div>
+
+<!-- Bottom Line -->
+<div class="card highlight" style="border-color: var(--gold); background: rgba(233,196,106,0.04);">
+<h3 style="color: var(--gold);">Bottom Line</h3>
+<p style="font-size:15px; line-height:1.7; color:#ffffff;">
+The stress suite did its job: it exposed the engine's true character — a <strong style="color:var(--orange);">regime-conditional vol-position miner with a neutrality leak and a fee drag</strong> — and it isolated the one window (usdowngrade-2011) where genuinely neutral alpha exists. The desk sequence is <strong style="color:var(--teal-bright);">P2 → P1 → P5 → P3</strong>, with P4 (micro-cash) only after the first three: stop the fee bleed (cheap, immediate), then fix the beta leak (the real blocker), de-contaminate the historical windows, and only then make the remaining claims statistically honest — and only then spend money calibrating execution. <strong style="color:var(--gold);">Until P1 lands, no PnL figure in this table is quotable as neutral stat-arb.</strong>
+</p>
+</div>
+
+</div><!-- .report-container -->
+</body>
+</html>

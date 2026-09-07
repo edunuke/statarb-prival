@@ -1,6 +1,9 @@
 # Stat-Arb Research Notebooks (private IP - protect from public repo)
 statarb_*
 
+# Source code (private research)
+src/
+
 # Python cache
 __pycache__/
 *.pyc
