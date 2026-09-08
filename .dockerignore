@@ -1,11 +1,15 @@
-# Build context is dev/. Exclude notebooks, data, model checkpoints.
+# Build context is repo root.
+# Exclude private research, notebooks, caches. Keep experiments/results/7/ for v1 deck.
+experiments/
+!experiments/results/
+!experiments/results/7/
+src/
 **/__pycache__/
 **/*.pyc
 **/.git/
 **/venv/
 **/.venv/
-*.pkl
-*.csv
-*.ipynb
 **/lightning_logs/
+*.pkl
+*.ipynb
 .kilo

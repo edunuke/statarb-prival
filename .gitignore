@@ -4,7 +4,7 @@ experiments/
 # Source code (private research)
 src/
 
-# Python cache
+# General cache
 __pycache__
 *.pyc
 .kilo
