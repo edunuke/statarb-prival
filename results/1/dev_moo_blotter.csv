@@ -1,3 +1,0 @@
-Ticker,Action,Order_Type,Delta_Shares,Target_Shares,Current_Shares,Est_Order_USD,Target_Weight_%,ADV_Participation_%,Price_Ref
-A,BUY,MOO,218,218,0,33724.6,13.49,0.003,154.7
-IQV,SELL,MOO,82,-82,0,21252.76,-8.5,0.001,259.18

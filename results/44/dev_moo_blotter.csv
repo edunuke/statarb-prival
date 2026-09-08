@@ -1,4 +1,0 @@
-Ticker,Action,Order_Type,Delta_Shares,Target_Shares,Current_Shares,Est_Order_USD,Target_Weight_%,ADV_Participation_%,Price_Ref
-MCO,BUY,MOO,126,126,0,62187.3,24.87,0.001,493.55
-SPGI,SELL,MOO,140,-140,0,62091.4,-24.84,0.001,443.51
-SPY,SELL,MOO,39,-39,0,30037.41,-12.01,0.0,770.19

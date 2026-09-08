@@ -9,8 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY docs/deck/main.py .
 COPY docs/deck/static ./static
 
-# Independent chart images and CSV data from dev/results/7/
-COPY results/7/ ./results/7/
+# Independent chart images and CSV data from experiments/results/7/
+COPY experiments/results/7/ ./results/7/
 
 EXPOSE 8000
 

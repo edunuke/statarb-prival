@@ -1,5 +1,5 @@
-# Stat-Arb Research Notebooks (private IP - protect from public repo)
-statarb_*
+# Private research experiments (code, data, results, artifacts)
+experiments/
 
 # Source code (private research)
 src/
