@@ -8,3 +8,4 @@ src/
 __pycache__
 *.pyc
 .kilo
+.DS_Store
